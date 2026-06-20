@@ -14,11 +14,11 @@ import { db } from "@/lib/db";
 import * as schema from "@/lib/db/schema";
 import { env } from "@/lib/env";
 
-export const auth = betterAuth({
+const baseOptions = {
   baseURL: env.betterAuthUrl,
   secret: env.betterAuthSecret ?? "build-time-placeholder-secret-change-in-production",
   database: drizzleAdapter(db, {
-    provider: "pg",
+    provider: "pg" as const,
     schema: {
       user: schema.user,
       session: schema.session,
@@ -33,14 +33,22 @@ export const auth = betterAuth({
     additionalFields: {
       // Ruolo applicativo. Non impostabile dall'utente in fase di signup.
       role: {
-        type: "string",
+        type: "string" as const,
         required: false,
         defaultValue: "sales",
         input: false,
       },
     },
   },
-  plugins: [nextCookies()],
-});
+};
+
+export const auth = betterAuth({ ...baseOptions, plugins: [nextCookies()] });
+
+/**
+ * Istanza per operazioni amministrative server-side (es. creazione utenti da invito).
+ * SENZA il plugin nextCookies: creare un utente NON deve impostare la sessione
+ * nel browser dell'admin che esegue l'azione.
+ */
+export const authAdmin = betterAuth(baseOptions);
 
 export type Session = typeof auth.$Infer.Session;

@@ -1,7 +1,7 @@
 /**
  * Data layer — prospect e audit (Drizzle). Le query girano solo a runtime.
  */
-import { and, desc, eq, gte, isNotNull, sql } from "drizzle-orm";
+import { and, desc, eq, gte, ilike, isNotNull, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { audits, prospects, reports, type ProspectStatus } from "@/lib/db/schema";
 import { generateSlug } from "@/lib/slug";
@@ -12,6 +12,7 @@ import type { AuditResult } from "../integrations/pagespeed";
 export type ProspectFilters = {
   status?: ProspectStatus;
   minScore?: number;
+  q?: string;
 };
 
 /** Lista prospect di una campagna con l'audit (se presente), ordinati per score desc. */
@@ -20,6 +21,9 @@ export async function listProspectsByCampaign(campaignId: string, filters: Prosp
   if (filters.status) conds.push(eq(prospects.status, filters.status));
   if (typeof filters.minScore === "number") {
     conds.push(gte(prospects.prospectScore, filters.minScore));
+  }
+  if (filters.q && filters.q.trim()) {
+    conds.push(ilike(prospects.businessName, `%${filters.q.trim()}%`));
   }
 
   return db

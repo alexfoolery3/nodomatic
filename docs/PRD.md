@@ -372,11 +372,12 @@ Tutto schedulato, idempotente, con guardie per non inviare doppioni.
 
 ### FASE 4 — CRM completo + Multi-utente + Analytics (≈1 settimana)
 **Obiettivo:** il team lavora in parallelo con piena visibilità.
-- [ ] Scheda prospect dettagliata (audit + landing preview + storico email + interazioni)
-- [ ] Gestione interazioni manuali (note, call, meeting)
-- [ ] Inviti utenti interni + gestione ruoli completa
-- [ ] Dashboard analytics aggregati (tasso apertura/click/risposta per campagna)
-- [ ] Filtri avanzati, ricerca, export CSV
+- [x] Scheda prospect dettagliata `/prospects/[id]` (audit + landing/report + storico email + interazioni)
+- [x] Gestione interazioni manuali (note, call, email_manual, meeting) con autore
+- [x] Inviti utenti interni `/team` (admin crea account + password iniziale) + cambio ruolo
+- [x] Analytics aggregati per campagna (tasso apertura/click/risposta, contattati, vinti)
+- [x] Filtri avanzati (stato + score) + ricerca per nome + export CSV
+- [ ] **Verifica live con dati reali** (richiede DB + funnel popolato)
 - **Deliverable testabile:** Davide logga, vede i prospect, marca una call, vede gli analytics di campagna.
 
 ### FASI FUTURE (post-MVP)
@@ -390,8 +391,14 @@ Tutto schedulato, idempotente, con guardie per non inviare doppioni.
 
 > Aggiornare a fine di ogni sessione Claude Code.
 
-- **Fase corrente:** FASE 3 — codice completo, in attesa di verifica live (servono le chiavi)
+- **Fase corrente:** FASE 4 — codice completo. MVP Prospector (Fasi 1-4) implementato, in
+  attesa di verifica live con le chiavi.
 - **Ultimo aggiornamento:** 2026-06-20
+- **Note Fase 4:** Scheda prospect `/prospects/[id]` (audit + landing/report + storico email +
+  interazioni), interazioni manuali con autore (note/call/email/meeting), pagina `/team` (admin:
+  invito utenti via BetterAuth `authAdmin` senza cookie + cambio ruolo), analytics aggregati per
+  campagna (apertura/click/risposta su contattati), ricerca per nome + export CSV. Schema
+  invariato (riusa interactions, user). typecheck/lint/build/test verdi senza `.env`.
 - **Note Fase 3:** Outreach con Resend (email HTML+testo con link alla landing personale del
   prospect), Inngest `outreach-sequence` durevole con i 4 step condizionali del PRD §9 (sleep +
   guardie su aperture/click/risposta, `cold` finale), warmup via throttle 50/giorno, webhook

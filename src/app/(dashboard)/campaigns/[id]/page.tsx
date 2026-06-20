@@ -4,8 +4,10 @@ import { isDbConfigured } from "@/lib/env";
 import { requireUser } from "@/lib/auth-guards";
 import { getCampaign } from "@/modules/prospector/data/campaigns";
 import { listProspectsByCampaign } from "@/modules/prospector/data/prospects";
+import { getCampaignAnalytics } from "@/modules/prospector/data/analytics";
 import { prospectStatusEnum, type ProspectStatus } from "@/lib/db/schema";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -14,8 +16,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { StatusSelect } from "@/components/status-select";
 import { OutreachButton } from "./outreach-button";
-import { StatusSelect } from "./status-select";
 
 export const dynamic = "force-dynamic";
 
@@ -31,7 +33,7 @@ export default async function CampaignDetailPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ status?: string; minScore?: string }>;
+  searchParams: Promise<{ status?: string; minScore?: string; q?: string }>;
 }) {
   if (!isDbConfigured) return null;
 
@@ -47,10 +49,23 @@ export default async function CampaignDetailPage({
     : undefined;
   const minScore = sp.minScore ? Number(sp.minScore) : undefined;
 
-  const rows = await listProspectsByCampaign(id, {
-    status,
-    minScore: Number.isFinite(minScore) ? minScore : undefined,
-  });
+  const [rows, analytics] = await Promise.all([
+    listProspectsByCampaign(id, {
+      status,
+      minScore: Number.isFinite(minScore) ? minScore : undefined,
+      q: sp.q,
+    }),
+    getCampaignAnalytics(id),
+  ]);
+
+  const stats = [
+    { label: "Prospect", value: analytics.total },
+    { label: "Contattati", value: analytics.contacted },
+    { label: "Aperture", value: `${analytics.openRate}%` },
+    { label: "Click", value: `${analytics.clickRate}%` },
+    { label: "Risposte", value: `${analytics.replyRate}%` },
+    { label: "Vinti", value: analytics.won },
+  ];
 
   return (
     <div className="space-y-6">
@@ -67,8 +82,30 @@ export default async function CampaignDetailPage({
         <OutreachButton campaignId={id} />
       </div>
 
-      {/* Filtri (GET): stato + score minimo */}
+      {/* Analytics aggregati (PRD §10 Fase 4) */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+        {stats.map((s) => (
+          <Card key={s.label}>
+            <CardContent className="py-4 text-center">
+              <div className="text-2xl font-semibold">{s.value}</div>
+              <div className="mt-1 text-xs text-neutral-500">{s.label}</div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Filtri (GET): ricerca + stato + score minimo */}
       <form className="flex flex-wrap items-end gap-3" method="get">
+        <div className="space-y-1">
+          <label className="text-xs text-neutral-500">Ricerca</label>
+          <input
+            type="search"
+            name="q"
+            defaultValue={sp.q ?? ""}
+            placeholder="nome attività…"
+            className="h-9 w-48 rounded-md border bg-white px-2 text-sm"
+          />
+        </div>
         <div className="space-y-1">
           <label className="text-xs text-neutral-500">Stato</label>
           <select
@@ -101,6 +138,12 @@ export default async function CampaignDetailPage({
         >
           Filtra
         </button>
+        <a
+          href={`/campaigns/${id}/export`}
+          className="h-9 rounded-md border px-4 text-sm font-medium leading-9 text-neutral-700 hover:bg-neutral-50"
+        >
+          Export CSV
+        </a>
       </form>
 
       <div className="rounded-lg border bg-white">
@@ -126,7 +169,14 @@ export default async function CampaignDetailPage({
               rows.map(({ prospect, audit }) => (
                 <TableRow key={prospect.id}>
                   <TableCell>{scoreBadge(prospect.prospectScore)}</TableCell>
-                  <TableCell className="font-medium">{prospect.businessName}</TableCell>
+                  <TableCell className="font-medium">
+                    <Link
+                      href={`/prospects/${prospect.id}`}
+                      className="hover:underline underline-offset-2"
+                    >
+                      {prospect.businessName}
+                    </Link>
+                  </TableCell>
                   <TableCell className="max-w-[14rem] truncate">
                     {prospect.website ? (
                       <a

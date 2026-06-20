@@ -40,6 +40,11 @@ export default async function DashboardLayout({
             <Link href="/campaigns" className="text-neutral-600 hover:text-neutral-900">
               Campagne
             </Link>
+            {(session.user as { role?: string }).role === "admin" && (
+              <Link href="/team" className="text-neutral-600 hover:text-neutral-900">
+                Team
+              </Link>
+            )}
           </nav>
           <div className="flex items-center gap-3">
             <span className="text-sm text-neutral-500">{session.user.email}</span>
