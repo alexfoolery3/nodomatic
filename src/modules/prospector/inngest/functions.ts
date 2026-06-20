@@ -22,6 +22,7 @@ import { hasEventType, insertEmailEvent } from "../data/emailEvents";
 import { recordFollowup } from "../data/followups";
 import { scrapeGoogleMaps } from "../integrations/apify";
 import { auditWebsite, type AuditResult } from "../integrations/pagespeed";
+import { detectTech } from "../integrations/techdetect";
 import { generateProspectContent } from "../integrations/ai";
 import { isR2Configured, uploadToR2 } from "../integrations/r2";
 import { sendOutreachEmail } from "../integrations/resend";
@@ -87,6 +88,10 @@ export const auditProspect = inngest.createFunction(
 
       const audit = await auditWebsite(prospect.website);
 
+      // Tech detection (PRD §6): popola lo stack e il flag "obsoleto" per lo scoring.
+      const tech = await detectTech(prospect.website);
+      audit.techStack = tech.techStack;
+
       // Screenshot del sito attuale → R2 (se configurato), per la landing.
       let screenshotUrl: string | null = null;
       if (isR2Configured && audit.screenshotDataUri) {
@@ -105,7 +110,7 @@ export const auditProspect = inngest.createFunction(
         performanceScore: audit.performanceScore,
         mobileFriendly: audit.mobileFriendly,
         hasHttps: audit.hasHttps,
-        outdatedTech: null, // PSI non fornisce il tech stack → nessun punto
+        outdatedTech: tech.outdated,
         loadTimeMs: audit.loadTimeMs,
       });
       await setAuditAndScore(prospectId, audit, score, screenshotUrl);
