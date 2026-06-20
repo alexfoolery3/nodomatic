@@ -5,7 +5,9 @@
 import { inngest } from "./client";
 import { getConnection, listActiveConnections } from "../data/connections";
 import { replaceConnectionMetrics } from "../data/metrics";
+import type { DailyMetric } from "../integrations";
 import { fetchGa4Metrics } from "../integrations/ga4";
+import { fetchMetaAdsMetrics } from "../integrations/meta-ads";
 
 function isoDate(d: Date): string {
   return d.toISOString().slice(0, 10);
@@ -25,16 +27,20 @@ export const refreshConnection = inngest.createFunction(
     return step.run("refresh", async () => {
       const conn = await getConnection(connectionId);
       if (!conn || !conn.active) return { skipped: true };
-      if (conn.provider !== "ga4") {
-        return { skipped: true, reason: "provider non ancora implementato" };
-      }
 
       const until = new Date();
       const since = new Date(Date.now() - 30 * 86_400_000);
-      const metrics = await fetchGa4Metrics(conn.externalId, {
-        since: isoDate(since),
-        until: isoDate(until),
-      });
+      const range = { since: isoDate(since), until: isoDate(until) };
+
+      let metrics: DailyMetric[];
+      if (conn.provider === "ga4") {
+        metrics = await fetchGa4Metrics(conn.externalId, range);
+      } else if (conn.provider === "meta_ads") {
+        metrics = await fetchMetaAdsMetrics(conn.externalId, range);
+      } else {
+        return { skipped: true, reason: "provider non ancora implementato" };
+      }
+
       await replaceConnectionMetrics(connectionId, since, metrics);
       return { ok: true, days: metrics.length };
     });

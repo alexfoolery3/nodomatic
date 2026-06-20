@@ -403,7 +403,10 @@ Tutto schedulato, idempotente, con guardie per non inviare doppioni.
   integrazione GA4 reale (Data API via service account, `GOOGLE_SERVICE_ACCOUNT_JSON` base64);
   Inngest `reporting-refresh-connection` (on-demand + cron giornaliero) → `rep_metrics_daily`;
   dashboard GA4 nel cliente (KPI 30g + grafico recharts) + pulsante "Aggiorna dati".
-  Fasi successive: Meta Ads (2), Google Ads + organico (3), report online + export (4).
+  **Fase 2 (Meta Ads) fatta:** integrazione Marketing API insights via System User token
+  (`META_SYSTEM_USER_TOKEN`, solo fetch, paginazione); `refreshConnection` gestisce `meta_ads`;
+  dashboard Meta nel cliente (spesa/impression/click/CTR/CPC/conversioni + grafico). Grafico
+  generalizzato (linee configurabili). Fasi successive: Google Ads + organico (3), report online + export (4).
 - **Estensioni post-MVP (in corso):** inserimento manuale prospect/clienti (non da scraping):
   campagna creabile senza scraping (checkbox) + form "Aggiungi prospect manualmente" sulla scheda
   campagna, che fa comunque partire l'audit. Prossimo grande passo proposto: entità condivisa

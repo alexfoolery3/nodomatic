@@ -18,7 +18,7 @@ import {
 import { ConnectionForm } from "./connection-form";
 import { RemoveConnectionButton } from "./remove-connection-button";
 import { RefreshButton } from "./refresh-button";
-import { MetricsChart, type MetricPoint } from "./metrics-chart";
+import { MetricsChart, type ChartLine } from "./metrics-chart";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +28,18 @@ const PROVIDER_LABEL: Record<string, string> = {
   google_ads: "Google Ads",
   meta_organic: "Social organico",
 };
+
+const GA4_LINES: ChartLine[] = [
+  { key: "sessions", label: "Sessioni", color: "#6366f1" },
+  { key: "users", label: "Utenti", color: "#10b981" },
+];
+const META_LINES: ChartLine[] = [
+  { key: "spend", label: "Spesa €", color: "#6366f1" },
+  { key: "clicks", label: "Click", color: "#f59e0b" },
+];
+
+const eur = (n: number) => `€ ${n.toLocaleString("it-IT", { maximumFractionDigits: 2 })}`;
+const int = (n: number) => Math.round(n).toLocaleString("it-IT");
 
 export default async function ClientDetailPage({ params }: { params: Promise<{ id: string }> }) {
   if (!isDbConfigured) return null;
@@ -49,7 +61,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
       let sessions = 0;
       let users = 0;
       let conversions = 0;
-      const series: MetricPoint[] = rows.map((r) => {
+      const series = rows.map((r) => {
         const m = (r.metrics ?? {}) as Record<string, number>;
         sessions += m.sessions ?? 0;
         users += m.activeUsers ?? 0;
@@ -60,11 +72,34 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
           users: m.activeUsers ?? 0,
         };
       });
-      return {
-        conn,
-        series,
-        totals: { sessions, users, conversions },
-      };
+      return { conn, series, totals: { sessions, users, conversions } };
+    }),
+  );
+
+  // Dashboard Meta Ads: aggrega le metriche delle connessioni Meta.
+  const meta = connections.filter((c) => c.provider === "meta_ads");
+  const metaDashboards = await Promise.all(
+    meta.map(async (conn) => {
+      const rows = await listConnectionMetrics(conn.id, 30);
+      let spend = 0;
+      let impressions = 0;
+      let clicks = 0;
+      let conversions = 0;
+      const series = rows.map((r) => {
+        const m = (r.metrics ?? {}) as Record<string, number>;
+        spend += m.spend ?? 0;
+        impressions += m.impressions ?? 0;
+        clicks += m.clicks ?? 0;
+        conversions += m.conversions ?? 0;
+        return {
+          date: new Date(r.date).toISOString().slice(0, 10),
+          spend: m.spend ?? 0,
+          clicks: m.clicks ?? 0,
+        };
+      });
+      const ctr = impressions > 0 ? (clicks / impressions) * 100 : 0;
+      const cpc = clicks > 0 ? spend / clicks : 0;
+      return { conn, series, totals: { spend, impressions, clicks, conversions, ctr, cpc } };
     }),
   );
 
@@ -110,7 +145,42 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
               ))}
             </div>
             {series.length > 0 ? (
-              <MetricsChart data={series} />
+              <MetricsChart data={series} lines={GA4_LINES} />
+            ) : (
+              <p className="text-sm text-neutral-500">
+                Nessun dato ancora. Premi &quot;Aggiorna dati&quot; per il primo pull.
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      ))}
+
+      {/* Dashboard Meta Ads (ultimi 30 giorni) */}
+      {metaDashboards.map(({ conn, series, totals }) => (
+        <Card key={conn.id}>
+          <CardHeader>
+            <CardTitle>
+              Meta Ads · {conn.displayName ?? conn.externalId} (ultimi 30 giorni)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+              {[
+                { label: "Spesa", value: eur(totals.spend) },
+                { label: "Impression", value: int(totals.impressions) },
+                { label: "Click", value: int(totals.clicks) },
+                { label: "CTR", value: `${totals.ctr.toFixed(2)}%` },
+                { label: "CPC", value: eur(totals.cpc) },
+                { label: "Conversioni", value: int(totals.conversions) },
+              ].map((s) => (
+                <div key={s.label} className="rounded-lg border bg-neutral-50 p-4 text-center">
+                  <div className="text-lg font-semibold">{s.value}</div>
+                  <div className="mt-1 text-xs text-neutral-500">{s.label}</div>
+                </div>
+              ))}
+            </div>
+            {series.length > 0 ? (
+              <MetricsChart data={series} lines={META_LINES} />
             ) : (
               <p className="text-sm text-neutral-500">
                 Nessun dato ancora. Premi &quot;Aggiorna dati&quot; per il primo pull.
