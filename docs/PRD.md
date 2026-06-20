@@ -406,7 +406,11 @@ Tutto schedulato, idempotente, con guardie per non inviare doppioni.
   **Fase 2 (Meta Ads) fatta:** integrazione Marketing API insights via System User token
   (`META_SYSTEM_USER_TOKEN`, solo fetch, paginazione); `refreshConnection` gestisce `meta_ads`;
   dashboard Meta nel cliente (spesa/impression/click/CTR/CPC/conversioni + grafico). Grafico
-  generalizzato (linee configurabili). Fasi successive: Google Ads + organico (3), report online + export (4).
+  generalizzato (linee configurabili).
+  **Fase 3 (Google Ads + social organico) fatta:** Google Ads via REST searchStream + OAuth refresh
+  token (solo fetch, no dep; GOOGLE_ADS_*); social organico via Graph API page insights (riusa il
+  token Meta); `refreshConnection` gestisce tutti e 4 i provider; dashboard dedicate nel cliente.
+  Fase successiva: report online `/r/[slug]` + export PDF/CSV (4).
 - **Estensioni post-MVP (in corso):** inserimento manuale prospect/clienti (non da scraping):
   campagna creabile senza scraping (checkbox) + form "Aggiungi prospect manualmente" sulla scheda
   campagna, che fa comunque partire l'audit. Prossimo grande passo proposto: entità condivisa

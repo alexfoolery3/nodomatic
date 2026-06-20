@@ -8,6 +8,8 @@ import { replaceConnectionMetrics } from "../data/metrics";
 import type { DailyMetric } from "../integrations";
 import { fetchGa4Metrics } from "../integrations/ga4";
 import { fetchMetaAdsMetrics } from "../integrations/meta-ads";
+import { fetchGoogleAdsMetrics } from "../integrations/google-ads";
+import { fetchMetaOrganicMetrics } from "../integrations/meta-organic";
 
 function isoDate(d: Date): string {
   return d.toISOString().slice(0, 10);
@@ -37,8 +39,10 @@ export const refreshConnection = inngest.createFunction(
         metrics = await fetchGa4Metrics(conn.externalId, range);
       } else if (conn.provider === "meta_ads") {
         metrics = await fetchMetaAdsMetrics(conn.externalId, range);
+      } else if (conn.provider === "google_ads") {
+        metrics = await fetchGoogleAdsMetrics(conn.externalId, range);
       } else {
-        return { skipped: true, reason: "provider non ancora implementato" };
+        metrics = await fetchMetaOrganicMetrics(conn.externalId, range);
       }
 
       await replaceConnectionMetrics(connectionId, since, metrics);

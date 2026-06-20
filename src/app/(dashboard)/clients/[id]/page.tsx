@@ -37,6 +37,14 @@ const META_LINES: ChartLine[] = [
   { key: "spend", label: "Spesa €", color: "#6366f1" },
   { key: "clicks", label: "Click", color: "#f59e0b" },
 ];
+const GADS_LINES: ChartLine[] = [
+  { key: "spend", label: "Spesa €", color: "#6366f1" },
+  { key: "clicks", label: "Click", color: "#f59e0b" },
+];
+const ORGANIC_LINES: ChartLine[] = [
+  { key: "impressions", label: "Impression", color: "#6366f1" },
+  { key: "engagement", label: "Engagement", color: "#10b981" },
+];
 
 const eur = (n: number) => `€ ${n.toLocaleString("it-IT", { maximumFractionDigits: 2 })}`;
 const int = (n: number) => Math.round(n).toLocaleString("it-IT");
@@ -100,6 +108,54 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
       const ctr = impressions > 0 ? (clicks / impressions) * 100 : 0;
       const cpc = clicks > 0 ? spend / clicks : 0;
       return { conn, series, totals: { spend, impressions, clicks, conversions, ctr, cpc } };
+    }),
+  );
+
+  // Dashboard Google Ads.
+  const gads = connections.filter((c) => c.provider === "google_ads");
+  const gadsDashboards = await Promise.all(
+    gads.map(async (conn) => {
+      const rows = await listConnectionMetrics(conn.id, 30);
+      let spend = 0;
+      let impressions = 0;
+      let clicks = 0;
+      let conversions = 0;
+      const series = rows.map((r) => {
+        const m = (r.metrics ?? {}) as Record<string, number>;
+        spend += m.spend ?? 0;
+        impressions += m.impressions ?? 0;
+        clicks += m.clicks ?? 0;
+        conversions += m.conversions ?? 0;
+        return {
+          date: new Date(r.date).toISOString().slice(0, 10),
+          spend: m.spend ?? 0,
+          clicks: m.clicks ?? 0,
+        };
+      });
+      return { conn, series, totals: { spend, impressions, clicks, conversions } };
+    }),
+  );
+
+  // Dashboard social organico (Meta).
+  const organic = connections.filter((c) => c.provider === "meta_organic");
+  const organicDashboards = await Promise.all(
+    organic.map(async (conn) => {
+      const rows = await listConnectionMetrics(conn.id, 30);
+      let impressions = 0;
+      let engagement = 0;
+      let followers = 0;
+      const series = rows.map((r) => {
+        const m = (r.metrics ?? {}) as Record<string, number>;
+        impressions += m.impressions ?? 0;
+        engagement += m.engagement ?? 0;
+        followers += m.followers ?? 0;
+        return {
+          date: new Date(r.date).toISOString().slice(0, 10),
+          impressions: m.impressions ?? 0,
+          engagement: m.engagement ?? 0,
+        };
+      });
+      return { conn, series, totals: { impressions, engagement, followers } };
     }),
   );
 
@@ -181,6 +237,71 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
             </div>
             {series.length > 0 ? (
               <MetricsChart data={series} lines={META_LINES} />
+            ) : (
+              <p className="text-sm text-neutral-500">
+                Nessun dato ancora. Premi &quot;Aggiorna dati&quot; per il primo pull.
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      ))}
+
+      {/* Dashboard Google Ads (ultimi 30 giorni) */}
+      {gadsDashboards.map(({ conn, series, totals }) => (
+        <Card key={conn.id}>
+          <CardHeader>
+            <CardTitle>
+              Google Ads · {conn.displayName ?? conn.externalId} (ultimi 30 giorni)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+              {[
+                { label: "Spesa", value: eur(totals.spend) },
+                { label: "Impression", value: int(totals.impressions) },
+                { label: "Click", value: int(totals.clicks) },
+                { label: "Conversioni", value: int(totals.conversions) },
+              ].map((s) => (
+                <div key={s.label} className="rounded-lg border bg-neutral-50 p-4 text-center">
+                  <div className="text-lg font-semibold">{s.value}</div>
+                  <div className="mt-1 text-xs text-neutral-500">{s.label}</div>
+                </div>
+              ))}
+            </div>
+            {series.length > 0 ? (
+              <MetricsChart data={series} lines={GADS_LINES} />
+            ) : (
+              <p className="text-sm text-neutral-500">
+                Nessun dato ancora. Premi &quot;Aggiorna dati&quot; per il primo pull.
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      ))}
+
+      {/* Dashboard social organico (ultimi 30 giorni) */}
+      {organicDashboards.map(({ conn, series, totals }) => (
+        <Card key={conn.id}>
+          <CardHeader>
+            <CardTitle>
+              Social organico · {conn.displayName ?? conn.externalId} (ultimi 30 giorni)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { label: "Impression", value: int(totals.impressions) },
+                { label: "Engagement", value: int(totals.engagement) },
+                { label: "Nuovi follower", value: int(totals.followers) },
+              ].map((s) => (
+                <div key={s.label} className="rounded-lg border bg-neutral-50 p-4 text-center">
+                  <div className="text-lg font-semibold">{s.value}</div>
+                  <div className="mt-1 text-xs text-neutral-500">{s.label}</div>
+                </div>
+              ))}
+            </div>
+            {series.length > 0 ? (
+              <MetricsChart data={series} lines={ORGANIC_LINES} />
             ) : (
               <p className="text-sm text-neutral-500">
                 Nessun dato ancora. Premi &quot;Aggiorna dati&quot; per il primo pull.
