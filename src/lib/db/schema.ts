@@ -72,6 +72,16 @@ export const followupStatusEnum = pgEnum("followup_status", [
   "cancelled",
 ]);
 
+// Modulo reporting (client analytics)
+export const connectionProviderEnum = pgEnum("connection_provider", [
+  "ga4",
+  "meta_ads",
+  "google_ads",
+  "meta_organic",
+]);
+
+export const reportStatusEnum = pgEnum("report_status", ["draft", "ready"]);
+
 // ---------------------------------------------------------------------------
 // Tipi per colonne jsonb
 // ---------------------------------------------------------------------------
@@ -277,6 +287,61 @@ export const monitoringSnapshots = pgTable("monitoring_snapshots", {
 });
 
 // ---------------------------------------------------------------------------
+// Entità condivisa: clienti (cross-modulo) — PRD §16 fondamenta condivise
+// ---------------------------------------------------------------------------
+export const clients = pgTable("clients", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  website: text("website"),
+  // collegamento opzionale al prospect da cui è nato (loop lead→cliente)
+  prospectId: uuid("prospect_id").references(() => prospects.id, { onDelete: "set null" }),
+  notes: text("notes"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
+// Modulo reporting (analisi marketing dei clienti)
+// ---------------------------------------------------------------------------
+export const repConnections = pgTable("rep_connections", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  clientId: uuid("client_id")
+    .notNull()
+    .references(() => clients.id, { onDelete: "cascade" }),
+  provider: connectionProviderEnum("provider").notNull(),
+  // GA4 property id / Meta ad account id / Google Ads customer id / IG-FB page id
+  externalId: text("external_id").notNull(),
+  displayName: text("display_name"),
+  active: boolean("active").notNull().default(true),
+  config: jsonb("config"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const repMetricsDaily = pgTable("rep_metrics_daily", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  connectionId: uuid("connection_id")
+    .notNull()
+    .references(() => repConnections.id, { onDelete: "cascade" }),
+  date: timestamp("date", { withTimezone: true }).notNull(),
+  metrics: jsonb("metrics"), // KPI normalizzati per provider
+  fetchedAt: timestamp("fetched_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const repReports = pgTable("rep_reports", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  clientId: uuid("client_id")
+    .notNull()
+    .references(() => clients.id, { onDelete: "cascade" }),
+  periodStart: timestamp("period_start", { withTimezone: true }).notNull(),
+  periodEnd: timestamp("period_end", { withTimezone: true }).notNull(),
+  slug: text("slug").unique(), // link pubblico /r/[slug]
+  data: jsonb("data"),
+  narrativeText: text("narrative_text"),
+  pdfUrl: text("pdf_url"), // R2
+  status: reportStatusEnum("status").notNull().default("draft"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
 // Tipi inferiti (comodità per query e UI)
 // ---------------------------------------------------------------------------
 export type User = typeof user.$inferSelect;
@@ -285,6 +350,9 @@ export type Prospect = typeof prospects.$inferSelect;
 export type Audit = typeof audits.$inferSelect;
 export type Report = typeof reports.$inferSelect;
 export type MonitoringSnapshot = typeof monitoringSnapshots.$inferSelect;
+export type Client = typeof clients.$inferSelect;
+export type RepConnection = typeof repConnections.$inferSelect;
+export type ConnectionProvider = (typeof connectionProviderEnum.enumValues)[number];
 
 export type Role = (typeof roleEnum.enumValues)[number];
 export type CampaignStatus = (typeof campaignStatusEnum.enumValues)[number];

@@ -394,6 +394,12 @@ Tutto schedulato, idempotente, con guardie per non inviare doppioni.
 - **Fase corrente:** FASE 4 — codice completo. MVP Prospector (Fasi 1-4) implementato, in
   attesa di verifica live con le chiavi.
 - **Ultimo aggiornamento:** 2026-06-20
+- **Nuovo modulo `reporting` (client analytics) — Fase 0 fatta:** entità condivisa `clients`
+  (collegabile a un prospect) + connessioni dati per cliente (`rep_connections`: GA4 / Meta Ads /
+  Google Ads / social organico) + schema `rep_metrics_daily` / `rep_reports`. UI `/clients` e
+  `/clients/[id]` (gestione connessioni, admin). Integrazioni stub. Accesso agency-managed. Output
+  previsti: dashboard interna + link pubblico `/r/[slug]` + export PDF/CSV. Fasi successive: GA4 (1),
+  Meta Ads (2), Google Ads + organico (3), report online + export (4). Migrazione 0002.
 - **Estensioni post-MVP (in corso):** inserimento manuale prospect/clienti (non da scraping):
   campagna creabile senza scraping (checkbox) + form "Aggiungi prospect manualmente" sulla scheda
   campagna, che fa comunque partire l'audit. Prossimo grande passo proposto: entità condivisa

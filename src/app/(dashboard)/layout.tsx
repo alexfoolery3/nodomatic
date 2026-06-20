@@ -40,6 +40,9 @@ export default async function DashboardLayout({
             <Link href="/campaigns" className="text-neutral-600 hover:text-neutral-900">
               Campagne
             </Link>
+            <Link href="/clients" className="text-neutral-600 hover:text-neutral-900">
+              Clienti
+            </Link>
             {(session.user as { role?: string }).role === "admin" && (
               <Link href="/team" className="text-neutral-600 hover:text-neutral-900">
                 Team
