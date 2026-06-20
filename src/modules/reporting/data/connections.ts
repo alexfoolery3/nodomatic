@@ -13,6 +13,15 @@ export async function listConnections(clientId: string) {
     .orderBy(desc(repConnections.createdAt));
 }
 
+export async function getConnection(id: string) {
+  const rows = await db.select().from(repConnections).where(eq(repConnections.id, id)).limit(1);
+  return rows[0] ?? null;
+}
+
+export async function listActiveConnections() {
+  return db.select().from(repConnections).where(eq(repConnections.active, true));
+}
+
 export async function addConnection(input: {
   clientId: string;
   provider: ConnectionProvider;

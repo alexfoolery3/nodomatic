@@ -397,9 +397,13 @@ Tutto schedulato, idempotente, con guardie per non inviare doppioni.
 - **Nuovo modulo `reporting` (client analytics) — Fase 0 fatta:** entità condivisa `clients`
   (collegabile a un prospect) + connessioni dati per cliente (`rep_connections`: GA4 / Meta Ads /
   Google Ads / social organico) + schema `rep_metrics_daily` / `rep_reports`. UI `/clients` e
-  `/clients/[id]` (gestione connessioni, admin). Integrazioni stub. Accesso agency-managed. Output
-  previsti: dashboard interna + link pubblico `/r/[slug]` + export PDF/CSV. Fasi successive: GA4 (1),
-  Meta Ads (2), Google Ads + organico (3), report online + export (4). Migrazione 0002.
+  `/clients/[id]` (gestione connessioni, admin). Accesso agency-managed. Output
+  previsti: dashboard interna + link pubblico `/r/[slug]` + export PDF/CSV. Migrazione 0002.
+  **Fase 1 (GA4) fatta:** client Inngest promosso a fondamenta condivise (`src/lib/inngest.ts`);
+  integrazione GA4 reale (Data API via service account, `GOOGLE_SERVICE_ACCOUNT_JSON` base64);
+  Inngest `reporting-refresh-connection` (on-demand + cron giornaliero) → `rep_metrics_daily`;
+  dashboard GA4 nel cliente (KPI 30g + grafico recharts) + pulsante "Aggiorna dati".
+  Fasi successive: Meta Ads (2), Google Ads + organico (3), report online + export (4).
 - **Estensioni post-MVP (in corso):** inserimento manuale prospect/clienti (non da scraping):
   campagna creabile senza scraping (checkbox) + form "Aggiungi prospect manualmente" sulla scheda
   campagna, che fa comunque partire l'audit. Prossimo grande passo proposto: entità condivisa

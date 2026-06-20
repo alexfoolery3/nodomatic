@@ -4,6 +4,7 @@ import { isDbConfigured } from "@/lib/env";
 import { requireUser } from "@/lib/auth-guards";
 import { getClient } from "@/modules/reporting/data/clients";
 import { listConnections } from "@/modules/reporting/data/connections";
+import { listConnectionMetrics } from "@/modules/reporting/data/metrics";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -16,6 +17,8 @@ import {
 } from "@/components/ui/table";
 import { ConnectionForm } from "./connection-form";
 import { RemoveConnectionButton } from "./remove-connection-button";
+import { RefreshButton } from "./refresh-button";
+import { MetricsChart, type MetricPoint } from "./metrics-chart";
 
 export const dynamic = "force-dynamic";
 
@@ -38,24 +41,84 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
   const connections = await listConnections(id);
   const isAdmin = user.role === "admin";
 
+  // Dashboard GA4: aggrega le metriche delle connessioni Google Analytics 4.
+  const ga4 = connections.filter((c) => c.provider === "ga4");
+  const ga4Dashboards = await Promise.all(
+    ga4.map(async (conn) => {
+      const rows = await listConnectionMetrics(conn.id, 30);
+      let sessions = 0;
+      let users = 0;
+      let conversions = 0;
+      const series: MetricPoint[] = rows.map((r) => {
+        const m = (r.metrics ?? {}) as Record<string, number>;
+        sessions += m.sessions ?? 0;
+        users += m.activeUsers ?? 0;
+        conversions += m.conversions ?? 0;
+        return {
+          date: new Date(r.date).toISOString().slice(0, 10),
+          sessions: m.sessions ?? 0,
+          users: m.activeUsers ?? 0,
+        };
+      });
+      return {
+        conn,
+        series,
+        totals: { sessions, users, conversions },
+      };
+    }),
+  );
+
   return (
     <div className="space-y-6">
-      <div>
-        <Link href="/clients" className="text-sm text-neutral-500 hover:text-neutral-900">
-          ← Clienti
-        </Link>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight">{client.name}</h1>
-        {client.website && (
-          <a
-            href={client.website}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-neutral-600 underline underline-offset-2"
-          >
-            {client.website}
-          </a>
-        )}
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <Link href="/clients" className="text-sm text-neutral-500 hover:text-neutral-900">
+            ← Clienti
+          </Link>
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight">{client.name}</h1>
+          {client.website && (
+            <a
+              href={client.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-neutral-600 underline underline-offset-2"
+            >
+              {client.website}
+            </a>
+          )}
+        </div>
+        {isAdmin && <RefreshButton clientId={id} />}
       </div>
+
+      {/* Dashboard GA4 (ultimi 30 giorni) */}
+      {ga4Dashboards.map(({ conn, series, totals }) => (
+        <Card key={conn.id}>
+          <CardHeader>
+            <CardTitle>GA4 · {conn.displayName ?? conn.externalId} (ultimi 30 giorni)</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { label: "Utenti", value: totals.users },
+                { label: "Sessioni", value: totals.sessions },
+                { label: "Conversioni", value: totals.conversions },
+              ].map((s) => (
+                <div key={s.label} className="rounded-lg border bg-neutral-50 p-4 text-center">
+                  <div className="text-2xl font-semibold">{s.value.toLocaleString("it-IT")}</div>
+                  <div className="mt-1 text-xs text-neutral-500">{s.label}</div>
+                </div>
+              ))}
+            </div>
+            {series.length > 0 ? (
+              <MetricsChart data={series} />
+            ) : (
+              <p className="text-sm text-neutral-500">
+                Nessun dato ancora. Premi &quot;Aggiorna dati&quot; per il primo pull.
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      ))}
 
       {isAdmin && (
         <Card>

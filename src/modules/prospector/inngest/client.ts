@@ -1,7 +1,5 @@
 /**
- * Client Inngest condiviso. Tutta la logica pesante (scraping, audit, AI, email)
- * gira in Inngest functions, mai in request handler sincroni (PRD §4.3).
+ * Client Inngest del modulo prospector — re-export del client condiviso
+ * (`@/lib/inngest`). Mantenuto per compatibilità degli import esistenti.
  */
-import { Inngest } from "inngest";
-
-export const inngest = new Inngest({ id: "nodomatic" });
+export { inngest } from "@/lib/inngest";
