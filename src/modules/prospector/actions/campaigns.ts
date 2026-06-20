@@ -37,12 +37,22 @@ export async function createCampaignAction(
     return { error: parsed.error.issues.map((i) => i.message).join(", ") };
   }
 
-  const campaign = await createCampaign({ ...parsed.data, createdBy: user.id });
+  // Checkbox: se deselezionato, crea una campagna "contenitore" senza scraping
+  // (utile per lead manuali / clienti esistenti).
+  const scrape = formData.get("scrape") !== null;
 
-  await inngest.send({
-    name: "prospector/campaign.scrape.requested",
-    data: { campaignId: campaign.id },
+  const campaign = await createCampaign({
+    ...parsed.data,
+    createdBy: user.id,
+    status: scrape ? "scraping" : "draft",
   });
+
+  if (scrape) {
+    await inngest.send({
+      name: "prospector/campaign.scrape.requested",
+      data: { campaignId: campaign.id },
+    });
+  }
 
   revalidatePath("/campaigns");
   return { ok: true };

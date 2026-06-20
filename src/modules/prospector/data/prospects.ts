@@ -93,6 +93,36 @@ export async function insertScrapedProspects(campaignId: string, businesses: Scr
   return db.insert(prospects).values(values).returning();
 }
 
+/** Inserisce un singolo prospect inserito a mano (non da scraping). */
+export async function insertManualProspect(
+  campaignId: string,
+  input: {
+    businessName: string;
+    website: string | null;
+    email: string | null;
+    phone: string | null;
+    category: string | null;
+    address: string | null;
+  },
+) {
+  const rows = await db
+    .insert(prospects)
+    .values({
+      campaignId,
+      businessName: input.businessName,
+      website: input.website,
+      email: input.email,
+      phone: input.phone,
+      category: input.category,
+      address: input.address,
+      status: "scraped",
+      slug: generateSlug(),
+      scrapedAt: new Date(),
+    })
+    .returning();
+  return rows[0];
+}
+
 /** Salva l'audit (se disponibile) e aggiorna score + stato del prospect. */
 export async function setAuditAndScore(
   prospectId: string,

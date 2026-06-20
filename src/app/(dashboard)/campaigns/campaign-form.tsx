@@ -36,13 +36,16 @@ export function CampaignForm() {
         </div>
       </div>
 
+      <label className="flex items-center gap-2 text-sm text-neutral-600">
+        <input type="checkbox" name="scrape" defaultChecked className="size-4" />
+        Avvia subito lo scraping (deseleziona per una campagna a inserimento manuale)
+      </label>
+
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
-      {state.ok && (
-        <p className="text-sm text-green-700">Campagna creata. Scraping avviato.</p>
-      )}
+      {state.ok && <p className="text-sm text-green-700">Campagna creata.</p>}
 
       <Button type="submit" disabled={pending}>
-        {pending ? "Avvio…" : "Lancia campagna"}
+        {pending ? "Avvio…" : "Crea campagna"}
       </Button>
     </form>
   );

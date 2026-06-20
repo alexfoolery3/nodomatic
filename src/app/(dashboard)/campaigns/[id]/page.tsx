@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/table";
 import { StatusSelect } from "@/components/status-select";
 import { OutreachButton } from "./outreach-button";
+import { ManualProspectForm } from "./manual-prospect-form";
 
 export const dynamic = "force-dynamic";
 
@@ -145,6 +146,8 @@ export default async function CampaignDetailPage({
           Export CSV
         </a>
       </form>
+
+      <ManualProspectForm campaignId={id} />
 
       <div className="rounded-lg border bg-white">
         <Table>

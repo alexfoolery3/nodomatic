@@ -394,6 +394,10 @@ Tutto schedulato, idempotente, con guardie per non inviare doppioni.
 - **Fase corrente:** FASE 4 — codice completo. MVP Prospector (Fasi 1-4) implementato, in
   attesa di verifica live con le chiavi.
 - **Ultimo aggiornamento:** 2026-06-20
+- **Estensioni post-MVP (in corso):** inserimento manuale prospect/clienti (non da scraping):
+  campagna creabile senza scraping (checkbox) + form "Aggiungi prospect manualmente" sulla scheda
+  campagna, che fa comunque partire l'audit. Prossimo grande passo proposto: entità condivisa
+  `company` per legare lead → prospect → cliente e gli altri moduli (vedi sez. 16).
 - **Note Fase 4:** Scheda prospect `/prospects/[id]` (audit + landing/report + storico email +
   interazioni), interazioni manuali con autore (note/call/email/meeting), pagina `/team` (admin:
   invito utenti via BetterAuth `authAdmin` senza cookie + cambio ruolo), analytics aggregati per

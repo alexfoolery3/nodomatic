@@ -19,6 +19,7 @@ export async function createCampaign(input: {
   city: string;
   category: string;
   createdBy: string | null;
+  status?: CampaignStatus;
 }) {
   const rows = await db
     .insert(campaigns)
@@ -26,7 +27,7 @@ export async function createCampaign(input: {
       name: input.name,
       city: input.city,
       category: input.category,
-      status: "scraping",
+      status: input.status ?? "scraping",
       createdBy: input.createdBy,
     })
     .returning();
