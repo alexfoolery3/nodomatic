@@ -338,13 +338,14 @@ Tutto schedulato, idempotente, con guardie per non inviare doppioni.
 
 ### FASE 1 — Fondamenta + Scraping + Audit (≈1 settimana)
 **Obiettivo:** dashboard interna che produce una lista di prospect auditati con score.
-- [ ] Setup Neon + Drizzle migrate (DATABASE_URL reale, `pnpm db:push`)
-- [ ] BetterAuth con login + ruoli (anche solo admin per ora)
-- [ ] Dashboard shell con auth gate (login UI)
-- [ ] Integrazione Apify: function "scrape campaign"
-- [ ] Integrazione PageSpeed API + screenshot: function "audit prospect"
-- [ ] Logica scoring collegata all'audit reale
-- [ ] Vista lista prospect con score, filtri base
+- [x] Migrazioni Drizzle generate (`src/lib/db/migrations`) — *resta da eseguire `db:push` su Neon reale*
+- [x] BetterAuth con login (`/login`) + ruoli + seed primo admin (`pnpm db:seed`)
+- [x] Dashboard shell con auth gate (login UI)
+- [x] Integrazione Apify: function "scrape campaign" (reale)
+- [x] Integrazione PageSpeed API: function "audit prospect" (reale) — *screenshot rimandati a Fase 2 (provider §13.3)*
+- [x] Logica scoring collegata all'audit reale
+- [x] Vista lista prospect con score, filtri base (stato, score minimo)
+- [ ] **Verifica live con dati reali** (richiede DATABASE_URL + APIFY_TOKEN + PAGESPEED_API_KEY)
 - **Deliverable testabile:** lancio "fisioterapisti Bologna" → vedo 50+ prospect auditati e ordinati per score.
 
 ### FASE 2 — AI Content + Landing fittizie (≈1 settimana)
@@ -385,10 +386,19 @@ Tutto schedulato, idempotente, con guardie per non inviare doppioni.
 
 > Aggiornare a fine di ogni sessione Claude Code.
 
-- **Fase corrente:** FASE 0 completata ✅ → prossima: FASE 1
+- **Fase corrente:** FASE 1 — codice completo, in attesa di verifica live (servono le chiavi)
 - **Ultimo aggiornamento:** 2026-06-20
-- **Note sessione precedente:** Scaffold fondamenta deploy-ready. Next.js 15 + TS + Tailwind v4 + shadcn/ui, struttura modular monolith, schema Drizzle completo, BetterAuth + Inngest cablati (build-green senza segreti), scoring implementato, stub integrazioni. `.gitignore` + `.env.example`. Landing pubblica + shell dashboard con auth gate + route `/p/[slug]` placeholder. `pnpm build` verde senza segreti. Deploy su Vercel.
-- **Blocchi/decisioni aperte:** vedi sezione 13. Per la Fase 1 servono: DATABASE_URL (Neon), APIFY_TOKEN, PAGESPEED_API_KEY, provider screenshot.
+- **Note sessione precedente:** (1) Scaffold Fase 0. (2) Fase 1 implementata: login BetterAuth
+  (`/login`) + guardie ruoli, seed primo admin (`pnpm db:seed`), creazione campagne (Server Action
+  + Zod, solo admin), integrazioni REALI Apify (scraping) e PageSpeed (audit), Inngest wiring
+  scrape→audit→scoring→DB, data layer Drizzle, vista campagne + lista prospect con filtri e score.
+  Migrazioni Drizzle generate (`src/lib/db/migrations`). Test Vitest sullo scoring (7/7).
+  `pnpm typecheck && lint && build && test` verdi senza `.env`.
+- **Da verificare live (servono chiavi):** impostare `.env.local` (Neon + Apify + PageSpeed +
+  BETTER_AUTH_SECRET) → `pnpm db:push` → `pnpm db:seed` → login → crea campagna → Inngest esegue
+  scrape+audit → lista prospect con score. Screenshot reali e tech-detect rimandati.
+- **Blocchi/decisioni aperte:** vedi sezione 13. Restano da fornire: DATABASE_URL (Neon),
+  APIFY_TOKEN, PAGESPEED_API_KEY; decidere provider screenshot (§13.3).
 
 ---
 

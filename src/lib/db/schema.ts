@@ -267,3 +267,7 @@ export type Campaign = typeof campaigns.$inferSelect;
 export type Prospect = typeof prospects.$inferSelect;
 export type Audit = typeof audits.$inferSelect;
 export type Report = typeof reports.$inferSelect;
+
+export type Role = (typeof roleEnum.enumValues)[number];
+export type CampaignStatus = (typeof campaignStatusEnum.enumValues)[number];
+export type ProspectStatus = (typeof prospectStatusEnum.enumValues)[number];

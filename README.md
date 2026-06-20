@@ -55,7 +55,13 @@ pnpm db:push        # sincronizza lo schema sul DB (dev)
 pnpm db:generate    # genera le migrazioni (per produzione)
 pnpm db:migrate     # applica le migrazioni
 pnpm db:studio      # GUI Drizzle Studio
+
+# crea il primo utente admin (imposta SEED_ADMIN_EMAIL/PASSWORD in .env.local):
+pnpm db:seed
 ```
+
+Poi vai su `/login`, accedi e crea una campagna da `/campaigns` (categoria + città):
+Inngest esegue scraping (Apify) e audit (PageSpeed), e i prospect compaiono ordinati per score.
 
 ### Variabili d'ambiente
 
@@ -87,5 +93,6 @@ funziona subito. Per renderlo operativo:
 
 ## Stato
 
-**Fase 0 (fondamenta deploy-ready) completata.** Prossima: Fase 1 (Neon + login + scraping Apify
-+ audit PageSpeed + scoring reale). Dettaglio in [`docs/PRD.md`](docs/PRD.md) §10-11.
+**Fase 1 implementata** (login + ruoli, campagne, scraping Apify, audit PageSpeed, scoring,
+lista prospect, migrazioni, test). In attesa di **verifica live** con le chiavi reali.
+Dettaglio in [`docs/PRD.md`](docs/PRD.md) §10-11.

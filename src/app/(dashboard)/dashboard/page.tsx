@@ -1,9 +1,11 @@
+import Link from "next/link";
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export const metadata = {
   title: "Dashboard",
@@ -35,12 +37,17 @@ const modules = [
 export default function DashboardPage() {
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-semibold tracking-tight">Prospector</h1>
-        <p className="mt-1 text-sm text-neutral-500">
-          Modulo di acquisizione clienti. Fondamenta pronte — le funzionalità
-          arrivano per fasi.
-        </p>
+      <div className="mb-8 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Prospector</h1>
+          <p className="mt-1 text-sm text-neutral-500">
+            Modulo di acquisizione clienti. Fondamenta pronte — le funzionalità
+            arrivano per fasi.
+          </p>
+        </div>
+        <Button asChild>
+          <Link href="/campaigns">Campagne</Link>
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
