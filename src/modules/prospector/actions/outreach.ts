@@ -5,7 +5,8 @@ import { z } from "zod";
 import { requireUser } from "@/lib/auth-guards";
 import { prospectStatusEnum } from "@/lib/db/schema";
 import { setCampaignStatus } from "../data/campaigns";
-import { listOutreachTargets, setProspectStatus } from "../data/prospects";
+import { getProspect, listOutreachTargets, setProspectStatus } from "../data/prospects";
+import { sendInternalEmail } from "../integrations/resend";
 import { inngest } from "../inngest/client";
 
 export type OutreachActionState = { error?: string; ok?: boolean; count?: number };
@@ -58,6 +59,19 @@ export async function setProspectStatusAction(input: {
   if (!parsed.success) return { error: "Input non valido." };
 
   await setProspectStatus(parsed.data.prospectId, parsed.data.status);
+
+  // Notifica al team i passaggi importanti (risposta ricevuta / cliente acquisito).
+  if (parsed.data.status === "replied" || parsed.data.status === "won") {
+    const prospect = await getProspect(parsed.data.prospectId);
+    if (prospect) {
+      const label = parsed.data.status === "won" ? "Cliente acquisito" : "Risposta ricevuta";
+      await sendInternalEmail(
+        `${label}: ${prospect.businessName}`,
+        `${prospect.businessName} è passato allo stato "${parsed.data.status}".`,
+      );
+    }
+  }
+
   revalidatePath(`/campaigns/${parsed.data.campaignId}`);
   return { ok: true };
 }

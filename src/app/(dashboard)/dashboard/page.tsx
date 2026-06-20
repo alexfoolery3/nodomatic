@@ -1,12 +1,16 @@
 import Link from "next/link";
+import { isDbConfigured } from "@/lib/env";
+import { getGlobalAnalytics } from "@/modules/prospector/data/analytics";
 import {
   Card,
+  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
+export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Dashboard",
 };
@@ -34,21 +38,46 @@ const modules = [
   },
 ];
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const analytics = isDbConfigured ? await getGlobalAnalytics() : null;
+
+  const stats = analytics
+    ? [
+        { label: "Prospect", value: analytics.total },
+        { label: "Contattati", value: analytics.contacted },
+        { label: "Aperture", value: `${analytics.openRate}%` },
+        { label: "Click", value: `${analytics.clickRate}%` },
+        { label: "Risposte", value: `${analytics.replyRate}%` },
+        { label: "Vinti", value: analytics.won },
+      ]
+    : [];
+
   return (
     <div>
       <div className="mb-8 flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Prospector</h1>
           <p className="mt-1 text-sm text-neutral-500">
-            Modulo di acquisizione clienti. Fondamenta pronte — le funzionalità
-            arrivano per fasi.
+            Modulo di acquisizione clienti. Panoramica e moduli.
           </p>
         </div>
         <Button asChild>
           <Link href="/campaigns">Campagne</Link>
         </Button>
       </div>
+
+      {stats.length > 0 && (
+        <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+          {stats.map((s) => (
+            <Card key={s.label}>
+              <CardContent className="py-4 text-center">
+                <div className="text-2xl font-semibold">{s.value}</div>
+                <div className="mt-1 text-xs text-neutral-500">{s.label}</div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {modules.map((m) => (

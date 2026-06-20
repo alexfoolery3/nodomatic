@@ -57,3 +57,40 @@ export async function getCampaignAnalytics(campaignId: string): Promise<Campaign
     replyRate: rate(replied),
   };
 }
+
+/** Stessi KPI ma aggregati su tutte le campagne (dashboard home). */
+export async function getGlobalAnalytics(): Promise<CampaignAnalytics> {
+  const [emailAgg] = await db
+    .select({
+      contacted: sql`count(distinct case when ${emailEvents.eventType} = 'sent' then ${emailEvents.prospectId} end)`,
+      opened: sql`count(distinct case when ${emailEvents.eventType} = 'open' then ${emailEvents.prospectId} end)`,
+      clicked: sql`count(distinct case when ${emailEvents.eventType} = 'click' then ${emailEvents.prospectId} end)`,
+    })
+    .from(emailEvents);
+
+  const [prospectAgg] = await db
+    .select({
+      total: sql`count(*)`,
+      replied: sql`count(*) filter (where ${prospects.status} = 'replied')`,
+      won: sql`count(*) filter (where ${prospects.status} = 'won')`,
+    })
+    .from(prospects);
+
+  const contacted = num(emailAgg?.contacted);
+  const opened = num(emailAgg?.opened);
+  const clicked = num(emailAgg?.clicked);
+  const replied = num(prospectAgg?.replied);
+  const rate = (n: number) => (contacted > 0 ? Math.round((n / contacted) * 100) : 0);
+
+  return {
+    total: num(prospectAgg?.total),
+    contacted,
+    opened,
+    clicked,
+    replied,
+    won: num(prospectAgg?.won),
+    openRate: rate(opened),
+    clickRate: rate(clicked),
+    replyRate: rate(replied),
+  };
+}

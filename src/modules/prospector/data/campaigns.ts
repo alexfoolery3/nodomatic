@@ -1,12 +1,30 @@
 /**
  * Data layer — campagne (Drizzle). Le query girano solo a runtime.
  */
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { campaigns, type CampaignStatus } from "@/lib/db/schema";
+import { campaigns, prospects, type CampaignStatus } from "@/lib/db/schema";
 
 export async function listCampaigns() {
   return db.select().from(campaigns).orderBy(desc(campaigns.createdAt));
+}
+
+/** Campagne con il numero di prospect (per la lista). */
+export async function listCampaignsWithCounts() {
+  return db
+    .select({
+      id: campaigns.id,
+      name: campaigns.name,
+      city: campaigns.city,
+      category: campaigns.category,
+      status: campaigns.status,
+      createdAt: campaigns.createdAt,
+      prospectCount: sql<number>`count(${prospects.id})`,
+    })
+    .from(campaigns)
+    .leftJoin(prospects, eq(prospects.campaignId, campaigns.id))
+    .groupBy(campaigns.id)
+    .orderBy(desc(campaigns.createdAt));
 }
 
 export async function getCampaign(id: string) {

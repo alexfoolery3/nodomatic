@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { isDbConfigured } from "@/lib/env";
 import { requireUser } from "@/lib/auth-guards";
-import { listCampaigns } from "@/modules/prospector/data/campaigns";
+import { listCampaignsWithCounts } from "@/modules/prospector/data/campaigns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CampaignForm } from "./campaign-form";
@@ -14,7 +14,7 @@ export default async function CampaignsPage() {
   if (!isDbConfigured) return null;
 
   const user = await requireUser();
-  const campaigns = await listCampaigns();
+  const campaigns = await listCampaignsWithCounts();
   const isAdmin = user.role === "admin";
 
   return (
@@ -54,7 +54,7 @@ export default async function CampaignsPage() {
               <div>
                 <div className="font-medium">{c.name}</div>
                 <div className="text-sm text-neutral-500">
-                  {c.category} · {c.city}
+                  {c.category} · {c.city} · {Number(c.prospectCount)} prospect
                 </div>
               </div>
               <Badge variant="secondary">{c.status}</Badge>
