@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireUser } from "@/lib/auth-guards";
+import { isApolloConfigured } from "../integrations/apollo";
 import { insertManualProspect } from "../data/prospects";
 import { inngest } from "../inngest/client";
 
@@ -56,6 +57,14 @@ export async function addManualProspectAction(
     name: "prospector/prospect.audit.requested",
     data: { prospectId: prospect.id },
   });
+
+  // Se manca l'email ma c'è un sito, prova l'arricchimento Apollo (se configurato).
+  if (isApolloConfigured && prospect.website && !prospect.email) {
+    await inngest.send({
+      name: "prospector/prospect.enrich.requested",
+      data: { prospectId: prospect.id },
+    });
+  }
 
   revalidatePath(`/campaigns/${d.campaignId}`);
   return { ok: true };

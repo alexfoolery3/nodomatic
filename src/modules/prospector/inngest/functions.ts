@@ -15,12 +15,14 @@ import {
   getProspect,
   insertScrapedProspects,
   setAuditAndScore,
+  setProspectEmail,
   setProspectStatus,
 } from "../data/prospects";
 import { getReportByProspectId, upsertReport } from "../data/reports";
 import { hasEventType, insertEmailEvent } from "../data/emailEvents";
 import { recordFollowup } from "../data/followups";
 import { scrapeGoogleMaps } from "../integrations/apify";
+import { domainFromUrl, findEmailForDomain, isApolloConfigured } from "../integrations/apollo";
 import { auditWebsite, type AuditResult } from "../integrations/pagespeed";
 import { detectTech } from "../integrations/techdetect";
 import { generateProspectContent } from "../integrations/ai";
@@ -61,6 +63,20 @@ export const scrapeCampaign = inngest.createFunction(
           data: { prospectId: p.id },
         })),
       );
+
+      // Arricchimento email (Apollo) per chi ha un sito ma nessuna email.
+      if (isApolloConfigured) {
+        const toEnrich = inserted.filter((p) => p.website && !p.email);
+        if (toEnrich.length > 0) {
+          await step.sendEvent(
+            "request-enrich",
+            toEnrich.map((p) => ({
+              name: "prospector/prospect.enrich.requested",
+              data: { prospectId: p.id },
+            })),
+          );
+        }
+      }
     }
 
     await step.run("mark-auditing", () => setCampaignStatus(campaignId, "auditing"));
@@ -126,6 +142,31 @@ export const auditProspect = inngest.createFunction(
     }
 
     return { ok: true, prospectId, ...result };
+  },
+);
+
+// Arricchimento email via Apollo (per prospect con sito ma senza email).
+export const enrichProspect = inngest.createFunction(
+  {
+    id: "enrich-prospect",
+    triggers: [{ event: "prospector/prospect.enrich.requested" }],
+    throttle: { limit: 100, period: "1d" },
+  },
+  async ({ event, step }) => {
+    const { prospectId } = event.data as { prospectId?: string };
+    if (!prospectId) throw new Error("prospectId mancante nell'evento");
+
+    return step.run("enrich", async () => {
+      const prospect = await getProspect(prospectId);
+      if (!prospect || prospect.email || !prospect.website) return { skipped: true };
+
+      const domain = domainFromUrl(prospect.website);
+      if (!domain) return { skipped: true };
+
+      const email = await findEmailForDomain(domain);
+      if (email) await setProspectEmail(prospectId, email);
+      return { ok: true, found: Boolean(email) };
+    });
   },
 );
 
@@ -327,6 +368,7 @@ export const outreachSequence = inngest.createFunction(
 /** Tutte le funzioni registrate, servite da /api/inngest. */
 export const functions = [
   scrapeCampaign,
+  enrichProspect,
   auditProspect,
   generateContent,
   outreachSequence,
