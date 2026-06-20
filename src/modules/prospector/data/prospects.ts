@@ -57,6 +57,10 @@ export async function setProspectEmail(id: string, email: string) {
   await db.update(prospects).set({ email }).where(eq(prospects.id, id));
 }
 
+export async function setProspectMonitored(id: string, monitored: boolean) {
+  await db.update(prospects).set({ monitored }).where(eq(prospects.id, id));
+}
+
 /**
  * Prospect pronti per l'outreach in una campagna: qualificati (score >= soglia),
  * con email e con un report generato, ancora in stato `audited`.

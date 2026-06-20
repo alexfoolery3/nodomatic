@@ -6,10 +6,12 @@ import { getAuditByProspectId, getProspect } from "@/modules/prospector/data/pro
 import { getReportByProspectId } from "@/modules/prospector/data/reports";
 import { listEventsByProspect } from "@/modules/prospector/data/emailEvents";
 import { listInteractionsByProspect } from "@/modules/prospector/data/interactions";
+import { listSnapshots } from "@/modules/prospector/data/monitoring";
 import { StatusSelect } from "@/components/status-select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { InteractionForm } from "./interaction-form";
+import { MonitorToggle } from "./monitor-toggle";
 
 export const dynamic = "force-dynamic";
 
@@ -25,11 +27,12 @@ export default async function ProspectDetailPage({ params }: { params: Promise<{
   const prospect = await getProspect(id);
   if (!prospect) notFound();
 
-  const [audit, report, events, interactions] = await Promise.all([
+  const [audit, report, events, interactions, snapshots] = await Promise.all([
     getAuditByProspectId(id),
     getReportByProspectId(id),
     listEventsByProspect(id),
     listInteractionsByProspect(id),
+    listSnapshots(id),
   ]);
 
   return (
@@ -161,6 +164,28 @@ export default async function ProspectDetailPage({ params }: { params: Promise<{
                       <span>{fmt(interaction.createdAt)}</span>
                     </div>
                     <p className="text-neutral-700">{interaction.content}</p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Monitoraggio */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Monitoraggio</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm">
+            <MonitorToggle prospectId={prospect.id} initial={prospect.monitored} />
+            {snapshots.length === 0 ? (
+              <p className="text-neutral-500">Nessuno snapshot ancora.</p>
+            ) : (
+              <ul className="space-y-1">
+                {snapshots.map((s) => (
+                  <li key={s.id} className="flex justify-between text-neutral-700">
+                    <span>perf {s.performanceScore ?? "—"} · SEO {s.seoScore ?? "—"}</span>
+                    <span className="text-neutral-400">{fmt(s.capturedAt)}</span>
                   </li>
                 ))}
               </ul>

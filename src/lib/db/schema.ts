@@ -177,6 +177,8 @@ export const prospects = pgTable("prospects", {
   prospectScore: integer("prospect_score"),
   // hash univoco usato per la URL della landing /p/[slug]
   slug: text("slug").unique(),
+  // monitoraggio continuo del sito (tipicamente clienti acquisiti) — PRD §16 retention
+  monitored: boolean("monitored").notNull().default(false),
   scrapedAt: timestamp("scraped_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -259,6 +261,21 @@ export const followupSequences = pgTable("followup_sequences", {
   status: followupStatusEnum("status").notNull().default("scheduled"),
 });
 
+/** Snapshot periodici del monitoraggio sito (per clienti acquisiti). */
+export const monitoringSnapshots = pgTable("monitoring_snapshots", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  prospectId: uuid("prospect_id")
+    .notNull()
+    .references(() => prospects.id, { onDelete: "cascade" }),
+  performanceScore: integer("performance_score"),
+  seoScore: integer("seo_score"),
+  accessibilityScore: integer("accessibility_score"),
+  bestPracticesScore: integer("best_practices_score"),
+  loadTimeMs: integer("load_time_ms"),
+  hasHttps: boolean("has_https"),
+  capturedAt: timestamp("captured_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 // ---------------------------------------------------------------------------
 // Tipi inferiti (comodità per query e UI)
 // ---------------------------------------------------------------------------
@@ -267,6 +284,7 @@ export type Campaign = typeof campaigns.$inferSelect;
 export type Prospect = typeof prospects.$inferSelect;
 export type Audit = typeof audits.$inferSelect;
 export type Report = typeof reports.$inferSelect;
+export type MonitoringSnapshot = typeof monitoringSnapshots.$inferSelect;
 
 export type Role = (typeof roleEnum.enumValues)[number];
 export type CampaignStatus = (typeof campaignStatusEnum.enumValues)[number];

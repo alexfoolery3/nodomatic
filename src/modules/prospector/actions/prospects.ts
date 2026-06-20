@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireUser } from "@/lib/auth-guards";
 import { isApolloConfigured } from "../integrations/apollo";
-import { insertManualProspect } from "../data/prospects";
+import { insertManualProspect, setProspectMonitored } from "../data/prospects";
 import { inngest } from "../inngest/client";
 
 const schema = z.object({
@@ -67,5 +67,24 @@ export async function addManualProspectAction(
   }
 
   revalidatePath(`/campaigns/${d.campaignId}`);
+  return { ok: true };
+}
+
+const monitoredSchema = z.object({
+  prospectId: z.string().uuid(),
+  monitored: z.boolean(),
+});
+
+/** Attiva/disattiva il monitoraggio continuo del sito di un prospect/cliente. */
+export async function setProspectMonitoredAction(input: {
+  prospectId: string;
+  monitored: boolean;
+}): Promise<ManualProspectState> {
+  await requireUser();
+  const parsed = monitoredSchema.safeParse(input);
+  if (!parsed.success) return { error: "Input non valido." };
+
+  await setProspectMonitored(parsed.data.prospectId, parsed.data.monitored);
+  revalidatePath(`/prospects/${parsed.data.prospectId}`);
   return { ok: true };
 }

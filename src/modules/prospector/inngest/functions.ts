@@ -21,13 +21,15 @@ import {
 import { getReportByProspectId, upsertReport } from "../data/reports";
 import { hasEventType, insertEmailEvent } from "../data/emailEvents";
 import { recordFollowup } from "../data/followups";
+import { createInteraction } from "../data/interactions";
+import { getLatestSnapshot, insertSnapshot, listMonitoredProspects } from "../data/monitoring";
 import { scrapeGoogleMaps } from "../integrations/apify";
 import { domainFromUrl, findEmailForDomain, isApolloConfigured } from "../integrations/apollo";
 import { auditWebsite, type AuditResult } from "../integrations/pagespeed";
 import { detectTech } from "../integrations/techdetect";
 import { generateProspectContent } from "../integrations/ai";
 import { isR2Configured, uploadToR2 } from "../integrations/r2";
-import { sendOutreachEmail } from "../integrations/resend";
+import { sendInternalEmail, sendOutreachEmail } from "../integrations/resend";
 import { computeProspectScore, isQualified, NO_WEBSITE_SCORE } from "../scoring";
 import type { ProspectStatus } from "@/lib/db/schema";
 
@@ -365,6 +367,68 @@ export const outreachSequence = inngest.createFunction(
   },
 );
 
+// ---------------------------------------------------------------------------
+// Monitoring continuo dei siti dei clienti (retention, PRD §16)
+// ---------------------------------------------------------------------------
+
+/** Soglia di calo performance che genera un alert. */
+const PERF_REGRESSION_THRESHOLD = 15;
+
+export const monitorSites = inngest.createFunction(
+  { id: "monitor-sites", triggers: [{ cron: "TZ=Europe/Rome 0 7 * * 1" }] },
+  async ({ step }) => {
+    const targets = await step.run("list-monitored", () => listMonitoredProspects());
+
+    let checked = 0;
+    let regressions = 0;
+
+    for (const p of targets) {
+      if (!p.website) continue;
+      const website = p.website;
+
+      const result = await step.run(`check-${p.id}`, async () => {
+        const audit = await auditWebsite(website);
+        const prev = await getLatestSnapshot(p.id);
+
+        await insertSnapshot({
+          prospectId: p.id,
+          performanceScore: audit.performanceScore,
+          seoScore: audit.seoScore,
+          accessibilityScore: audit.accessibilityScore,
+          bestPracticesScore: audit.bestPracticesScore,
+          loadTimeMs: audit.loadTimeMs,
+          hasHttps: audit.hasHttps,
+        });
+
+        const dropped =
+          prev?.performanceScore != null &&
+          audit.performanceScore <= prev.performanceScore - PERF_REGRESSION_THRESHOLD;
+
+        if (dropped) {
+          const from = prev!.performanceScore;
+          await createInteraction({
+            prospectId: p.id,
+            userId: null,
+            type: "note",
+            content: `⚠️ Monitoraggio: performance ${from} → ${audit.performanceScore}.`,
+          });
+          await sendInternalEmail(
+            `Calo performance: ${p.businessName}`,
+            `Il sito ${website} è passato da ${from} a ${audit.performanceScore} di performance (PageSpeed).`,
+          );
+          return { regression: true };
+        }
+        return { regression: false };
+      });
+
+      checked++;
+      if (result.regression) regressions++;
+    }
+
+    return { ok: true, checked, regressions };
+  },
+);
+
 /** Tutte le funzioni registrate, servite da /api/inngest. */
 export const functions = [
   scrapeCampaign,
@@ -372,4 +436,5 @@ export const functions = [
   auditProspect,
   generateContent,
   outreachSequence,
+  monitorSites,
 ];

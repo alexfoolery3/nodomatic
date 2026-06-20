@@ -18,7 +18,7 @@ export async function listInteractionsByProspect(prospectId: string) {
 
 export async function createInteraction(input: {
   prospectId: string;
-  userId: string;
+  userId: string | null;
   type: InteractionType;
   content: string;
   scheduledAt?: Date | null;

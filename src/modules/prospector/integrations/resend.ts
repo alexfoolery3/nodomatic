@@ -39,6 +39,26 @@ function renderHtml(body: string, landingUrl: string): string {
   </div>`;
 }
 
+export const isResendConfigured = Boolean(
+  process.env.RESEND_API_KEY && process.env.OUTREACH_FROM_EMAIL,
+);
+
+/**
+ * Email interna al team (es. alert di monitoraggio). No-op se Resend o
+ * TEAM_NOTIFY_EMAIL non sono configurati.
+ */
+export async function sendInternalEmail(subject: string, body: string): Promise<void> {
+  const to = process.env.TEAM_NOTIFY_EMAIL;
+  if (!to || !isResendConfigured) return;
+  const resend = new Resend(requireEnv("RESEND_API_KEY"));
+  await resend.emails.send({
+    from: requireEnv("OUTREACH_FROM_EMAIL"),
+    to,
+    subject,
+    text: body,
+  });
+}
+
 export async function sendOutreachEmail(input: SendOutreachInput): Promise<SendOutreachResult> {
   const resend = new Resend(requireEnv("RESEND_API_KEY"));
   const from = requireEnv("OUTREACH_FROM_EMAIL");
