@@ -93,7 +93,11 @@ funziona subito. Per renderlo operativo:
 
 ## Stato
 
-**Fasi 1 e 2 implementate.** Fase 1: login + ruoli, campagne, scraping Apify, audit PageSpeed,
-scoring, lista prospect. Fase 2: generazione contenuti AI (Claude Haiku), report, screenshot →
-R2, landing `/p/[slug]` curata, tracking visite. In attesa di **verifica live** con le chiavi
-reali. Dettaglio in [`docs/PRD.md`](docs/PRD.md) §10-11.
+**Fasi 1-3 implementate.** Fase 1: login + ruoli, campagne, scraping Apify, audit PageSpeed,
+scoring, lista prospect. Fase 2: contenuti AI (Claude Haiku), report, screenshot → R2, landing
+`/p/[slug]`, tracking visite. Fase 3: outreach Resend + sequenza follow-up condizionale (Inngest),
+webhook tracking (firma Svix), warmup. In attesa di **verifica live** con le chiavi reali.
+Dettaglio in [`docs/PRD.md`](docs/PRD.md) §10-11.
+
+> Webhook Resend: configurare su Resend l'endpoint `…/api/webhooks/resend` e mettere il secret
+> in `RESEND_WEBHOOK_SECRET`. Il dominio email outreach va verificato (SPF/DKIM/DMARC) lato Resend.

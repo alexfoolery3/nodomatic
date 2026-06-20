@@ -1,24 +1,58 @@
 /**
- * Resend — invio email di outreach + tracking (PRD §3 [7][8], Fase 3). STUB.
- * Usare un dominio/sottodominio dedicato con SPF/DKIM/DMARC (PRD §4.2).
+ * Resend — invio email di outreach + tracking (PRD §3 [7][8], Fase 3).
+ *
+ * Usare un dominio/sottodominio dedicato con SPF/DKIM/DMARC (PRD §4.2): la
+ * configurazione DNS è manuale lato Resend. build-green: chiavi a runtime.
  */
-import { NotImplementedError } from "./index";
+import { Resend } from "resend";
+import { requireEnv } from "@/lib/env";
 
 export type SendOutreachInput = {
   to: string;
   subject: string;
   body: string;
-  prospectId: string;
-  campaignId: string;
+  /** URL della landing personale del prospect (/p/[slug]). */
+  landingUrl: string;
 };
 
-export type SendOutreachResult = {
-  resendId: string;
-};
+export type SendOutreachResult = { resendId: string };
 
-export async function sendOutreachEmail(
-  _input: SendOutreachInput,
-): Promise<SendOutreachResult> {
-  void _input;
-  throw new NotImplementedError("Resend outreach", "Fase 3");
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function renderHtml(body: string, landingUrl: string): string {
+  const paragraphs = body
+    .split(/\n{2,}/)
+    .map((p) => `<p style="margin:0 0 16px">${escapeHtml(p).replace(/\n/g, "<br/>")}</p>`)
+    .join("");
+  return `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#171717;line-height:1.5;max-width:520px">
+    ${paragraphs}
+    <p style="margin:24px 0">
+      <a href="${landingUrl}" style="background:#171717;color:#fff;text-decoration:none;padding:12px 20px;border-radius:8px;display:inline-block">Guarda l'analisi del tuo sito</a>
+    </p>
+    <p style="margin:0;color:#737373;font-size:13px">Nodomatic · RT Studio</p>
+  </div>`;
+}
+
+export async function sendOutreachEmail(input: SendOutreachInput): Promise<SendOutreachResult> {
+  const resend = new Resend(requireEnv("RESEND_API_KEY"));
+  const from = requireEnv("OUTREACH_FROM_EMAIL");
+
+  const { data, error } = await resend.emails.send({
+    from,
+    to: input.to,
+    subject: input.subject,
+    html: renderHtml(input.body, input.landingUrl),
+    text: `${input.body}\n\n${input.landingUrl}\n\nNodomatic · RT Studio`,
+  });
+
+  if (error || !data) {
+    throw new Error(`Invio Resend fallito: ${error?.message ?? "nessun id"}`);
+  }
+  return { resendId: data.id };
 }

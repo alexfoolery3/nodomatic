@@ -14,6 +14,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { OutreachButton } from "./outreach-button";
+import { StatusSelect } from "./status-select";
 
 export const dynamic = "force-dynamic";
 
@@ -52,14 +54,17 @@ export default async function CampaignDetailPage({
 
   return (
     <div className="space-y-6">
-      <div>
-        <Link href="/campaigns" className="text-sm text-neutral-500 hover:text-neutral-900">
-          ← Campagne
-        </Link>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight">{campaign.name}</h1>
-        <p className="mt-1 text-sm text-neutral-500">
-          {campaign.category} · {campaign.city} · stato {campaign.status}
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <Link href="/campaigns" className="text-sm text-neutral-500 hover:text-neutral-900">
+            ← Campagne
+          </Link>
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight">{campaign.name}</h1>
+          <p className="mt-1 text-sm text-neutral-500">
+            {campaign.category} · {campaign.city} · stato {campaign.status}
+          </p>
+        </div>
+        <OutreachButton campaignId={id} />
       </div>
 
       {/* Filtri (GET): stato + score minimo */}
@@ -138,7 +143,11 @@ export default async function CampaignDetailPage({
                   </TableCell>
                   <TableCell>{audit?.performanceScore ?? "—"}</TableCell>
                   <TableCell>
-                    <Badge variant="secondary">{prospect.status}</Badge>
+                    <StatusSelect
+                      prospectId={prospect.id}
+                      campaignId={id}
+                      value={prospect.status}
+                    />
                   </TableCell>
                   <TableCell>
                     {prospect.slug ? (

@@ -1,10 +1,11 @@
 /**
  * Data layer — prospect e audit (Drizzle). Le query girano solo a runtime.
  */
-import { and, desc, eq, gte, sql } from "drizzle-orm";
+import { and, desc, eq, gte, isNotNull, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { audits, prospects, type ProspectStatus } from "@/lib/db/schema";
+import { audits, prospects, reports, type ProspectStatus } from "@/lib/db/schema";
 import { generateSlug } from "@/lib/slug";
+import { SCORE_THRESHOLD } from "../scoring";
 import type { ScrapedBusiness } from "../integrations/apify";
 import type { AuditResult } from "../integrations/pagespeed";
 
@@ -42,6 +43,29 @@ export async function getAuditByProspectId(prospectId: string) {
 export async function getProspectBySlug(slug: string) {
   const rows = await db.select().from(prospects).where(eq(prospects.slug, slug)).limit(1);
   return rows[0] ?? null;
+}
+
+export async function setProspectStatus(id: string, status: ProspectStatus) {
+  await db.update(prospects).set({ status }).where(eq(prospects.id, id));
+}
+
+/**
+ * Prospect pronti per l'outreach in una campagna: qualificati (score >= soglia),
+ * con email e con un report generato, ancora in stato `audited`.
+ */
+export async function listOutreachTargets(campaignId: string) {
+  return db
+    .select({ id: prospects.id })
+    .from(prospects)
+    .innerJoin(reports, eq(reports.prospectId, prospects.id))
+    .where(
+      and(
+        eq(prospects.campaignId, campaignId),
+        eq(prospects.status, "audited"),
+        gte(prospects.prospectScore, SCORE_THRESHOLD),
+        isNotNull(prospects.email),
+      ),
+    );
 }
 
 /** Inserisce i prospect prodotti dallo scraping, assegnando uno slug univoco a ciascuno. */

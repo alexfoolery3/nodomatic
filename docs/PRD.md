@@ -360,11 +360,14 @@ Tutto schedulato, idempotente, con guardie per non inviare doppioni.
 
 ### FASE 3 — Email + Tracking + Follow-up (≈1 settimana)
 **Obiettivo:** outreach automatizzato e tracciato end-to-end.
-- [ ] Setup Resend + dominio dedicato + DKIM/SPF/DMARC
-- [ ] Inngest function "send outreach"
-- [ ] Webhook Resend → email_events
-- [ ] Sequenza follow-up condizionale
-- [ ] Warmup logic (rate limiting invii)
+- [x] Integrazione Resend (invio HTML + testo con link alla landing del prospect)
+- [~] Dominio dedicato + DKIM/SPF/DMARC — **configurazione DNS manuale** lato Resend (non codice)
+- [x] Inngest `outreach-sequence` (invio iniziale + email_event 'sent' + stato `contacted`)
+- [x] Webhook Resend → email_events (firma verificata con Svix) + upgrade stato prospect
+- [x] Sequenza follow-up condizionale (PRD §9: step 2/3/4 con guardie, `cold` a fine sequenza)
+- [x] Warmup: throttle 50 invii/giorno (settimana 1; alzabile)
+- [x] Azioni: "Avvia outreach" campagna (admin) + cambio stato manuale prospect (stop sequenza)
+- [ ] **Verifica live** (richiede RESEND_API_KEY + dominio verificato + webhook configurato)
 - **Deliverable testabile:** invio campagna a 10 prospect test → tracking aperture/click visibile, follow-up partono da soli.
 
 ### FASE 4 — CRM completo + Multi-utente + Analytics (≈1 settimana)
@@ -387,8 +390,17 @@ Tutto schedulato, idempotente, con guardie per non inviare doppioni.
 
 > Aggiornare a fine di ogni sessione Claude Code.
 
-- **Fase corrente:** FASE 2 — codice completo, in attesa di verifica live (servono le chiavi)
+- **Fase corrente:** FASE 3 — codice completo, in attesa di verifica live (servono le chiavi)
 - **Ultimo aggiornamento:** 2026-06-20
+- **Note Fase 3:** Outreach con Resend (email HTML+testo con link alla landing personale del
+  prospect), Inngest `outreach-sequence` durevole con i 4 step condizionali del PRD §9 (sleep +
+  guardie su aperture/click/risposta, `cold` finale), warmup via throttle 50/giorno, webhook
+  Resend `/api/webhooks/resend` con firma verificata (Svix) → email_events + upgrade stato,
+  azione "Avvia outreach" (admin) e select di stato manuale per i prospect. Schema invariato
+  (riusa email_events e followup_sequences). typecheck/lint/build/test verdi senza `.env`.
+- **Per la verifica live Fase 3 servono:** RESEND_API_KEY, OUTREACH_FROM_EMAIL (dominio
+  verificato con SPF/DKIM/DMARC), RESEND_WEBHOOK_SECRET + webhook configurato su Resend verso
+  `https://nodomatic.com/api/webhooks/resend`, e l'app deployata/raggiungibile da Inngest.
 - **Note sessione precedente:** (1) Scaffold Fase 0. (2) Fase 1: login + ruoli, seed admin,
   campagne (Server Action + Zod), Apify + PageSpeed reali, Inngest scrape→audit→scoring→DB,
   vista campagne/prospect, migrazioni, test scoring (7/7). (3) Fase 2: generazione AI con Claude
