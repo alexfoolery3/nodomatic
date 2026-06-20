@@ -93,6 +93,7 @@ funziona subito. Per renderlo operativo:
 
 ## Stato
 
-**Fase 1 implementata** (login + ruoli, campagne, scraping Apify, audit PageSpeed, scoring,
-lista prospect, migrazioni, test). In attesa di **verifica live** con le chiavi reali.
-Dettaglio in [`docs/PRD.md`](docs/PRD.md) §10-11.
+**Fasi 1 e 2 implementate.** Fase 1: login + ruoli, campagne, scraping Apify, audit PageSpeed,
+scoring, lista prospect. Fase 2: generazione contenuti AI (Claude Haiku), report, screenshot →
+R2, landing `/p/[slug]` curata, tracking visite. In attesa di **verifica live** con le chiavi
+reali. Dettaglio in [`docs/PRD.md`](docs/PRD.md) §10-11.

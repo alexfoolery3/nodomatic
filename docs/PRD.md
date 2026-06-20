@@ -350,11 +350,12 @@ Tutto schedulato, idempotente, con guardie per non inviare doppioni.
 
 ### FASE 2 — AI Content + Landing fittizie (≈1 settimana)
 **Obiettivo:** ogni prospect qualificato ha una landing personalizzata visitabile.
-- [ ] Integrazione Claude API + prompt JSON strutturato
-- [ ] Inngest function "generate content"
-- [ ] Schema reports + storage R2 per screenshot
-- [ ] Route dinamica `/p/[slug]` con design curato
-- [ ] Tracking visite landing
+- [x] Integrazione Claude API (Haiku) + output JSON strutturato (structured outputs + Zod)
+- [x] Inngest function "generate content" (triggerata dall'audit per i prospect qualificati)
+- [x] Schema reports + storage R2 per screenshot (screenshot catturato da PageSpeed → R2)
+- [x] Route dinamica `/p/[slug]` con design curato (screenshot + metriche + analisi + proposta)
+- [x] Tracking visite landing (beacon JS, IP hashato)
+- [ ] **Verifica live con dati reali** (richiede ANTHROPIC_API_KEY + R2_* oltre a DB/Apify/PageSpeed)
 - **Deliverable testabile:** apro `/p/xyz` e vedo una landing personalizzata convincente per un prospect reale.
 
 ### FASE 3 — Email + Tracking + Follow-up (≈1 settimana)
@@ -386,19 +387,21 @@ Tutto schedulato, idempotente, con guardie per non inviare doppioni.
 
 > Aggiornare a fine di ogni sessione Claude Code.
 
-- **Fase corrente:** FASE 1 — codice completo, in attesa di verifica live (servono le chiavi)
+- **Fase corrente:** FASE 2 — codice completo, in attesa di verifica live (servono le chiavi)
 - **Ultimo aggiornamento:** 2026-06-20
-- **Note sessione precedente:** (1) Scaffold Fase 0. (2) Fase 1 implementata: login BetterAuth
-  (`/login`) + guardie ruoli, seed primo admin (`pnpm db:seed`), creazione campagne (Server Action
-  + Zod, solo admin), integrazioni REALI Apify (scraping) e PageSpeed (audit), Inngest wiring
-  scrape→audit→scoring→DB, data layer Drizzle, vista campagne + lista prospect con filtri e score.
-  Migrazioni Drizzle generate (`src/lib/db/migrations`). Test Vitest sullo scoring (7/7).
-  `pnpm typecheck && lint && build && test` verdi senza `.env`.
-- **Da verificare live (servono chiavi):** impostare `.env.local` (Neon + Apify + PageSpeed +
-  BETTER_AUTH_SECRET) → `pnpm db:push` → `pnpm db:seed` → login → crea campagna → Inngest esegue
-  scrape+audit → lista prospect con score. Screenshot reali e tech-detect rimandati.
-- **Blocchi/decisioni aperte:** vedi sezione 13. Restano da fornire: DATABASE_URL (Neon),
-  APIFY_TOKEN, PAGESPEED_API_KEY; decidere provider screenshot (§13.3).
+- **Note sessione precedente:** (1) Scaffold Fase 0. (2) Fase 1: login + ruoli, seed admin,
+  campagne (Server Action + Zod), Apify + PageSpeed reali, Inngest scrape→audit→scoring→DB,
+  vista campagne/prospect, migrazioni, test scoring (7/7). (3) Fase 2: generazione AI con Claude
+  Haiku (output JSON strutturato via Zod), Inngest "generate-content" triggerata dai prospect
+  qualificati, report data layer, screenshot del sito catturato da PageSpeed → R2 (S3-compatibile),
+  landing `/p/[slug]` curata (screenshot + metriche + analisi + proposta + CTA), tracking visite
+  con beacon JS e IP hashato. `pnpm typecheck && lint && build && test` verdi senza `.env`.
+- **Da verificare live (servono chiavi):** `.env.local` con DATABASE_URL (Neon), APIFY_TOKEN,
+  PAGESPEED_API_KEY, ANTHROPIC_API_KEY, R2_* → `pnpm db:push` → `pnpm db:seed` → crea campagna →
+  Inngest scrape+audit, i qualificati generano report → apri `/p/[slug]` e vedi la landing.
+- **Decisione presa:** screenshot ricavato da PageSpeed Insights (niente provider dedicato →
+  §13.3 risolta pragmaticamente, da confermare). Rimandato: tech-detect per `outdatedTech`.
+- **Blocchi/decisioni aperte:** vedi sezione 13. Restano da fornire le chiavi sopra.
 
 ---
 
@@ -459,7 +462,7 @@ R2_PUBLIC_URL=
 
 1. ~~**TLD dominio Nodomatic**~~ → **RISOLTO: `nodomatic.com`**.
 2. **Dominio email outreach**: sottodominio di Nodomatic o dominio separato dedicato? (separato = reputazione più sicura)
-3. **Screenshot provider**: Browserless vs Cloudflare Browser Rendering — decidere su costo/affidabilità in Fase 2.
+3. ~~**Screenshot provider**: Browserless vs Cloudflare~~ → **RISOLTO (da confermare)**: lo screenshot viene ricavato dal report PageSpeed Insights (Lighthouse `final-screenshot`) e archiviato su R2 — nessun provider screenshot dedicato. Se in futuro servisse maggiore qualità/desktop, valutare Browserless/Cloudflare.
 4. **Plausible vs Umami**: quale per web analytics self-hosted sul VPS n8n.
 5. **Source scraping oltre Google Maps**: aggiungere Pagine Gialle/altri in futuro?
 6. **Categoria + città di partenza** per il primo test reale di Fase 1.

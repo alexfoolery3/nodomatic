@@ -34,6 +34,11 @@ export async function getProspect(id: string) {
   return rows[0] ?? null;
 }
 
+export async function getAuditByProspectId(prospectId: string) {
+  const rows = await db.select().from(audits).where(eq(audits.prospectId, prospectId)).limit(1);
+  return rows[0] ?? null;
+}
+
 export async function getProspectBySlug(slug: string) {
   const rows = await db.select().from(prospects).where(eq(prospects.slug, slug)).limit(1);
   return rows[0] ?? null;
@@ -65,6 +70,7 @@ export async function setAuditAndScore(
   prospectId: string,
   auditResult: AuditResult | null,
   score: number,
+  screenshotMobileUrl: string | null = null,
 ) {
   if (auditResult) {
     await db.insert(audits).values({
@@ -77,6 +83,7 @@ export async function setAuditAndScore(
       hasHttps: auditResult.hasHttps,
       techStack: auditResult.techStack,
       loadTimeMs: auditResult.loadTimeMs,
+      screenshotMobile: screenshotMobileUrl,
       auditedAt: new Date(),
     });
   }

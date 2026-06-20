@@ -18,10 +18,16 @@ export type AuditResult = {
   hasHttps: boolean;
   techStack: TechStack;
   loadTimeMs: number;
+  /** Screenshot mobile come data URI (da Lighthouse), se disponibile. */
+  screenshotDataUri: string | null;
 };
 
 type LighthouseCategory = { score?: number | null };
-type LighthouseAudit = { numericValue?: number | null; score?: number | null };
+type LighthouseAudit = {
+  numericValue?: number | null;
+  score?: number | null;
+  details?: { data?: string } | null;
+};
 type PageSpeedResponse = {
   lighthouseResult?: {
     categories?: Record<string, LighthouseCategory>;
@@ -65,5 +71,6 @@ export async function auditWebsite(url: string): Promise<AuditResult> {
     hasHttps: url.startsWith("https://"),
     techStack: {} as TechStack,
     loadTimeMs: Math.round(interactive ?? 0),
+    screenshotDataUri: audits["final-screenshot"]?.details?.data ?? null,
   };
 }
