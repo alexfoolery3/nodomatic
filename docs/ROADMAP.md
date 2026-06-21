@@ -10,6 +10,7 @@ Legenda stato: ✅ fatto · 🔜 prossimo · ⏸️ in pausa / posticipato.
 | data | aspetto | voce | PR/commit |
 |------|---------|------|-----------|
 | 2026-06-21 | H Go-live | pin Node 22.x, build verde, deploy Vercel avviato | `7eca253` |
+| 2026-06-21 | — Processo | fix branch orfano: `main` allineato + passo "atterraggio su main" nel rituale | _questa sessione_ |
 | 2026-06-21 | — Processo | rituale dev: HISTORY/ROADMAP + skill `/pre-merge` + hook | _questa sessione_ |
 | 2026-06-20 | C Reporting | report online + export PDF/CSV (modulo completo) | `a6dae82` |
 | 2026-06-20 | C Reporting | Google Ads + social organico | `36cd7e7` |

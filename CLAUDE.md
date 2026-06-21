@@ -99,6 +99,10 @@ Prima di pushare il branch di sessione o aprire/mergiare una PR (un hook lo rico
    in "Azioni manuali in sospeso".
 5. `pnpm typecheck && pnpm lint && pnpm build` verdi → commit **Conventional Commits** → push →
    PR → merge **solo con OK** utente.
+6. **Atterraggio su `main`** (così nuove sessioni e Vercel partono dal codice reale, non da un branch
+   orfano): PR del branch di sessione → `main`, mergiata **con OK** tuo e **solo se l'incremento è
+   completo e spedibile**. ⚠️ `main` = deploy in **produzione** su Vercel: non promuovere build verdi
+   ma incomplete. FF-merge diretto su `main` solo per recuperi una-tantum.
 
 ## Comandi
 

@@ -39,6 +39,18 @@ Stack: **Neon + Drizzle**, migrazioni versionate (non Supabase).
 - `git push -u origin <branch-di-sessione>` (retry con backoff se errori di rete).
 - Apri PR; **merge solo con OK dell'utente**. Non creare PR se non richiesto esplicitamente.
 
+## 6. Non lasciare il lavoro orfano (chiusura sessione)
+Prima di chiudere, assicurati che il lavoro **atterri dove la prossima sessione e il deploy lo
+troveranno** — non lasciarlo bloccato su un branch che nessuno ripescherà (è la causa tipica delle
+nuove sessioni che "ripartono vuote"). Il *meccanismo* dipende dal progetto → definiscilo nel
+`CLAUDE.md` del repo, **non** assumere "sempre merge su main":
+- **Merge su `main`** (fast-forward o merge) — ok per repo solo-dev / interni, trunk-based.
+- **PR → review → merge** — quando `main` è protetto, c'è un team, o `main` fa auto-deploy in prod.
+- **Branch long-lived condiviso** — se le sessioni devono continuare lo stesso filone.
+
+⚠️ Se `main` = deploy in **produzione**: promuovi solo incrementi **completi e spedibili**, non ogni
+build verde. Una build verde non è necessariamente una feature finita.
+
 ---
 
 ## Bootstrap nuovo progetto/repo

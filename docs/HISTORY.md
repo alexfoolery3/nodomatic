@@ -21,6 +21,12 @@ Convenzione: voce più recente **in cima**, sotto `## Cosa è stato fatto`, come
 - **Prep go-live**: pin `engines.node = 22.x` in `package.json` (commit `7eca253`); build verde
   senza segreti verificata. Deploy Vercel avviato ma in sospeso (il tool MCP `deploy_to_vercel`
   richiede approvazione del permesso; in alternativa collegare il repo a Vercel manualmente).
+- **Fix "branch orfano"**: tutto lo sviluppo era accumulato su `claude/nodomatic-project-setup-ztqnw7`
+  mentre `main` era fermo all'Initial commit (`e83e13f`) → le nuove sessioni web, nascendo da `main`,
+  ripartivano vuote. Risolto allineando `main` con fast-forward a `985d9f4`. Aggiunto al rituale il
+  passo "atterraggio su `main`": **principio generico** nello skill `/pre-merge` (il meccanismo
+  dipende dal progetto, non assumere "sempre merge su main") + **meccanismo specifico** in CLAUDE.md
+  (PR → `main` con OK utente, solo incrementi spedibili, perché `main` = deploy prod su Vercel).
 
 ### Sessione 2026-06-20 — Modulo Reporting (Fasi 0-4)
 Nuovo modulo `src/modules/reporting`: analisi campagne/canali per cliente, esportabile e
