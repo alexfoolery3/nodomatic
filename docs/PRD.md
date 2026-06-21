@@ -410,7 +410,10 @@ Tutto schedulato, idempotente, con guardie per non inviare doppioni.
   **Fase 3 (Google Ads + social organico) fatta:** Google Ads via REST searchStream + OAuth refresh
   token (solo fetch, no dep; GOOGLE_ADS_*); social organico via Graph API page insights (riusa il
   token Meta); `refreshConnection` gestisce tutti e 4 i provider; dashboard dedicate nel cliente.
-  Fase successiva: report online `/r/[slug]` + export PDF/CSV (4).
+  **Fase 4 (report) fatta → modulo COMPLETO:** compilazione report periodico (aggrega le sorgenti +
+  narrativa AI con Claude Haiku) → `rep_reports`; link pubblico white-label `/r/[slug]` (no-index) +
+  export PDF (`@react-pdf/renderer`, no headless browser) + CSV; Inngest `generateReport` + cron
+  mensile; UI "Genera report" + lista report nel cliente. Modulo reporting completo (Fasi 0-4).
 - **Estensioni post-MVP (in corso):** inserimento manuale prospect/clienti (non da scraping):
   campagna creabile senza scraping (checkbox) + form "Aggiungi prospect manualmente" sulla scheda
   campagna, che fa comunque partire l'audit. Prossimo grande passo proposto: entità condivisa

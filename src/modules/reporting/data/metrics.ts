@@ -1,7 +1,7 @@
 /**
  * Data layer — metriche giornaliere delle connessioni (rep_metrics_daily). Runtime-only.
  */
-import { and, asc, eq, gte } from "drizzle-orm";
+import { and, asc, eq, gte, lte } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { repMetricsDaily } from "@/lib/db/schema";
 import type { DailyMetric } from "../integrations";
@@ -32,5 +32,19 @@ export async function listConnectionMetrics(connectionId: string, sinceDays = 30
     .select()
     .from(repMetricsDaily)
     .where(and(eq(repMetricsDaily.connectionId, connectionId), gte(repMetricsDaily.date, since)))
+    .orderBy(asc(repMetricsDaily.date));
+}
+
+export async function listConnectionMetricsRange(connectionId: string, since: Date, until: Date) {
+  return db
+    .select()
+    .from(repMetricsDaily)
+    .where(
+      and(
+        eq(repMetricsDaily.connectionId, connectionId),
+        gte(repMetricsDaily.date, since),
+        lte(repMetricsDaily.date, until),
+      ),
+    )
     .orderBy(asc(repMetricsDaily.date));
 }

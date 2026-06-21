@@ -5,6 +5,7 @@ import { requireUser } from "@/lib/auth-guards";
 import { getClient } from "@/modules/reporting/data/clients";
 import { listConnections } from "@/modules/reporting/data/connections";
 import { listConnectionMetrics } from "@/modules/reporting/data/metrics";
+import { listReportsByClient } from "@/modules/reporting/data/reports";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -18,7 +19,8 @@ import {
 import { ConnectionForm } from "./connection-form";
 import { RemoveConnectionButton } from "./remove-connection-button";
 import { RefreshButton } from "./refresh-button";
-import { MetricsChart, type ChartLine } from "./metrics-chart";
+import { GenerateReportButton } from "./generate-report-button";
+import { MetricsChart, type ChartLine } from "@/components/metrics-chart";
 
 export const dynamic = "force-dynamic";
 
@@ -59,6 +61,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
   if (!client) notFound();
 
   const connections = await listConnections(id);
+  const reports = await listReportsByClient(id);
   const isAdmin = user.role === "admin";
 
   // Dashboard GA4: aggrega le metriche delle connessioni Google Analytics 4.
@@ -359,10 +362,45 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
         </Table>
       </div>
 
-      <p className="text-sm text-neutral-500">
-        Dashboard dei dati e report (online + PDF/CSV) arrivano nelle fasi successive: GA4, poi Meta
-        Ads, Google Ads e social organico.
-      </p>
+      {/* Report periodici (online + PDF/CSV) */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Report</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {isAdmin && <GenerateReportButton clientId={id} />}
+          {reports.length === 0 ? (
+            <p className="text-sm text-neutral-500">Nessun report generato.</p>
+          ) : (
+            <ul className="divide-y">
+              {reports.map((r) => (
+                <li key={r.id} className="flex items-center justify-between py-2 text-sm">
+                  <span className="text-neutral-700">
+                    {new Date(r.periodStart).toLocaleDateString("it-IT")} –{" "}
+                    {new Date(r.periodEnd).toLocaleDateString("it-IT")}
+                  </span>
+                  <span className="flex gap-3">
+                    <a
+                      href={`/r/${r.slug}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-neutral-600 underline underline-offset-2"
+                    >
+                      Online
+                    </a>
+                    <a href={`/r/${r.slug}/pdf`} className="text-neutral-600 underline underline-offset-2">
+                      PDF
+                    </a>
+                    <a href={`/r/${r.slug}/csv`} className="text-neutral-600 underline underline-offset-2">
+                      CSV
+                    </a>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
