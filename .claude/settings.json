@@ -5,6 +5,12 @@
         "hooks": [
           {
             "type": "command",
+            "command": "if [ -d node_modules ]; then echo 'deps presenti'; elif pnpm install --frozen-lockfile >/tmp/nodomatic-pnpm-install.log 2>&1; then echo 'deps installate (pnpm install ok)'; else echo 'pnpm install fallito: vedi /tmp/nodomatic-pnpm-install.log'; fi",
+            "timeout": 600,
+            "statusMessage": "Installo le dipendenze (pnpm install)..."
+          },
+          {
+            "type": "command",
             "command": "printf 'Rituale Nodomatic: leggi CLAUDE.md + docs/ROADMAP.md a inizio sessione. Prima di pushare/mergiare segui lo skill /pre-merge (HISTORY, ROADMAP, qualita, Conventional Commits).'"
           }
         ]
