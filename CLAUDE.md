@@ -1,12 +1,33 @@
 # CLAUDE.md — guida per le sessioni di sviluppo
 
-Leggi questo file e [`docs/PRD.md`](docs/PRD.md) all'inizio di ogni sessione. Il PRD è la
-fonte di verità; questo file riassume le regole operative.
+Leggi questo file e [`docs/ROADMAP.md`](docs/ROADMAP.md) all'inizio di ogni sessione.
+
+**Trittico di memoria** (ruoli distinti, niente doppioni):
+- **CLAUDE.md** (questo) = memoria *sempre caricata*, snella: regole, promemoria critici, comandi.
+- [`docs/ROADMAP.md`](docs/ROADMAP.md) = *fonte unica del piano* operativo + storico sintetico (stato ✅/🔜/⏸️).
+- [`docs/HISTORY.md`](docs/HISTORY.md) = archivio narrativo dettagliato (si legge su richiesta).
+- [`docs/PRD.md`](docs/PRD.md) = spec di prodotto (cosa/perché).
 
 ## Cos'è il progetto
 
 Nodomatic = ecosistema di automazioni **interne** di RT Studio. Primo modulo: **Prospector**
 (funnel: trova → analizza → personalizza con AI → contatta → follow-up → CRM). Vedi PRD §3.
+
+## Promemoria critici
+
+**Azioni manuali in sospeso** (da fare a mano, fuori dal codice):
+- Migrazioni Drizzle `0000`–`0002` da applicare con `pnpm db:migrate` quando `DATABASE_URL` (Neon)
+  sarà impostato. Un solo DB condiviso → si applica una volta. *(Nessuna nuova migration pendente.)*
+- Deploy Vercel avviato ma in sospeso: `deploy_to_vercel` richiede approvazione permesso MCP,
+  oppure collegare il repo a Vercel manualmente (team `rt-studio`).
+
+**Checklist go-live `.com`** (dettaglio in `docs/ROADMAP.md` → area H): DB Neon → env var su Vercel
+(`DATABASE_URL`, `BETTER_AUTH_SECRET/URL`, `NEXT_PUBLIC_APP_URL`, `IP_HASH_SALT`, poi le chiavi in
+`.env.example`) → `pnpm db:migrate` → `pnpm db:seed` (primo admin) → Inngest sync su `/api/inngest`
+→ Resend webhook su `/api/webhooks/resend` → dominio `nodomatic.com`.
+
+**Gotcha DB/build**: l'app deve buildare **senza segreti** (vedi "Convenzioni build-green"); le pagine
+che leggono il DB usano `export const dynamic = "force-dynamic"` + guardia `isDbConfigured`.
 
 ## Vincoli vincolanti (PRD §1.5, §15, §16) — NON violare
 
@@ -24,7 +45,8 @@ Nodomatic = ecosistema di automazioni **interne** di RT Studio. Primo modulo: **
 - Costruire **per fasi** (PRD §10), in ordine. Non saltare avanti. Ogni fase testata prima della successiva.
 - Ogni feature nuova → branch dedicato → PR → review → merge.
 - **Mai segreti versionati.** Solo `.env.local` (gitignored) e `.env.example` (placeholder).
-- Aggiornare la sezione "Stato avanzamento" (PRD §11) a fine sessione.
+- A fine sessione / prima di pushare: esegui il **Rituale pre-merge** (skill `/pre-merge`) →
+  aggiorna `docs/ROADMAP.md` (stato) e `docs/HISTORY.md` (narrativa).
 - Validare input con **Zod** su tutte le mutation. Logica pesante solo in **Inngest functions**.
 - IP visitatori landing **hashati** prima del salvataggio (privacy/GDPR).
 
@@ -66,3 +88,21 @@ Verifica sempre prima di committare: `pnpm typecheck && pnpm lint && pnpm build`
 
 Dominio email outreach (sottodominio vs separato), provider screenshot (Browserless vs Cloudflare),
 Plausible vs Umami, sorgenti scraping extra, categoria/città primo test, modello AI default (Haiku vs Sonnet).
+
+## Rituale pre-merge (skill `/pre-merge`)
+
+Prima di pushare il branch di sessione o aprire/mergiare una PR (un hook lo ricorda su `git push`):
+1. `docs/HISTORY.md` → blocco `### Sessione AAAA-MM-GG — Titolo` in cima.
+2. `docs/ROADMAP.md` → riga in "Storico" + stato area (✅/🔜/⏸️) aggiornato.
+3. `CLAUDE.md` → solo se cambiano regole/gotcha/stato o "Azioni manuali in sospeso".
+4. Migration Drizzle → se schema cambiato: `pnpm db:generate`, committa l'SQL, annota `db:migrate`
+   in "Azioni manuali in sospeso".
+5. `pnpm typecheck && pnpm lint && pnpm build` verdi → commit **Conventional Commits** → push →
+   PR → merge **solo con OK** utente.
+
+## Comandi
+
+- Dev/qualità: `pnpm dev`, `pnpm build`, `pnpm typecheck`, `pnpm lint`, `pnpm test`.
+- DB (Drizzle/Neon): `pnpm db:generate` (migration), `pnpm db:migrate` (applica), `pnpm db:push`,
+  `pnpm db:studio`, `pnpm db:seed` (primo admin via `SEED_ADMIN_EMAIL`/`SEED_ADMIN_PASSWORD`).
+- Push: `git push -u origin <branch-di-sessione>` (retry con backoff in caso di errori di rete).

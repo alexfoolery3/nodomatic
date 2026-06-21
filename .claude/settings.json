@@ -1,0 +1,25 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "printf 'Rituale Nodomatic: leggi CLAUDE.md + docs/ROADMAP.md a inizio sessione. Prima di pushare/mergiare segui lo skill /pre-merge (HISTORY, ROADMAP, qualita, Conventional Commits).'"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"$CLAUDE_PROJECT_DIR/.claude/hooks/pre-merge-reminder.sh\""
+          }
+        ]
+      }
+    ]
+  }
+}

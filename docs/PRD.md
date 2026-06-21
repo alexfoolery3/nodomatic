@@ -16,7 +16,7 @@ Questo PRD è la fonte di verità del progetto. È pensato per essere letto da C
 - Ogni fase deve essere funzionante e testata prima di passare alla successiva.
 - Nessun segreto nei file versionati: solo `.env.local` (gitignored) e `.env.example` con placeholder.
 - Ogni feature nuova → branch dedicato → PR → review → merge.
-- Aggiornare la sezione "Stato avanzamento" (sezione 11) alla fine di ogni sessione.
+- A fine sessione aggiornare `docs/ROADMAP.md` (stato/piano) e `docs/HISTORY.md` (cronologia) — skill `/pre-merge`.
 
 ---
 
@@ -389,62 +389,10 @@ Tutto schedulato, idempotente, con guardie per non inviare doppioni.
 
 ## 11. Stato avanzamento
 
-> Aggiornare a fine di ogni sessione Claude Code.
-
-- **Fase corrente:** FASE 4 — codice completo. MVP Prospector (Fasi 1-4) implementato, in
-  attesa di verifica live con le chiavi.
-- **Ultimo aggiornamento:** 2026-06-20
-- **Nuovo modulo `reporting` (client analytics) — Fase 0 fatta:** entità condivisa `clients`
-  (collegabile a un prospect) + connessioni dati per cliente (`rep_connections`: GA4 / Meta Ads /
-  Google Ads / social organico) + schema `rep_metrics_daily` / `rep_reports`. UI `/clients` e
-  `/clients/[id]` (gestione connessioni, admin). Accesso agency-managed. Output
-  previsti: dashboard interna + link pubblico `/r/[slug]` + export PDF/CSV. Migrazione 0002.
-  **Fase 1 (GA4) fatta:** client Inngest promosso a fondamenta condivise (`src/lib/inngest.ts`);
-  integrazione GA4 reale (Data API via service account, `GOOGLE_SERVICE_ACCOUNT_JSON` base64);
-  Inngest `reporting-refresh-connection` (on-demand + cron giornaliero) → `rep_metrics_daily`;
-  dashboard GA4 nel cliente (KPI 30g + grafico recharts) + pulsante "Aggiorna dati".
-  **Fase 2 (Meta Ads) fatta:** integrazione Marketing API insights via System User token
-  (`META_SYSTEM_USER_TOKEN`, solo fetch, paginazione); `refreshConnection` gestisce `meta_ads`;
-  dashboard Meta nel cliente (spesa/impression/click/CTR/CPC/conversioni + grafico). Grafico
-  generalizzato (linee configurabili).
-  **Fase 3 (Google Ads + social organico) fatta:** Google Ads via REST searchStream + OAuth refresh
-  token (solo fetch, no dep; GOOGLE_ADS_*); social organico via Graph API page insights (riusa il
-  token Meta); `refreshConnection` gestisce tutti e 4 i provider; dashboard dedicate nel cliente.
-  **Fase 4 (report) fatta → modulo COMPLETO:** compilazione report periodico (aggrega le sorgenti +
-  narrativa AI con Claude Haiku) → `rep_reports`; link pubblico white-label `/r/[slug]` (no-index) +
-  export PDF (`@react-pdf/renderer`, no headless browser) + CSV; Inngest `generateReport` + cron
-  mensile; UI "Genera report" + lista report nel cliente. Modulo reporting completo (Fasi 0-4).
-- **Estensioni post-MVP (in corso):** inserimento manuale prospect/clienti (non da scraping):
-  campagna creabile senza scraping (checkbox) + form "Aggiungi prospect manualmente" sulla scheda
-  campagna, che fa comunque partire l'audit. Prossimo grande passo proposto: entità condivisa
-  `company` per legare lead → prospect → cliente e gli altri moduli (vedi sez. 16).
-- **Note Fase 4:** Scheda prospect `/prospects/[id]` (audit + landing/report + storico email +
-  interazioni), interazioni manuali con autore (note/call/email/meeting), pagina `/team` (admin:
-  invito utenti via BetterAuth `authAdmin` senza cookie + cambio ruolo), analytics aggregati per
-  campagna (apertura/click/risposta su contattati), ricerca per nome + export CSV. Schema
-  invariato (riusa interactions, user). typecheck/lint/build/test verdi senza `.env`.
-- **Note Fase 3:** Outreach con Resend (email HTML+testo con link alla landing personale del
-  prospect), Inngest `outreach-sequence` durevole con i 4 step condizionali del PRD §9 (sleep +
-  guardie su aperture/click/risposta, `cold` finale), warmup via throttle 50/giorno, webhook
-  Resend `/api/webhooks/resend` con firma verificata (Svix) → email_events + upgrade stato,
-  azione "Avvia outreach" (admin) e select di stato manuale per i prospect. Schema invariato
-  (riusa email_events e followup_sequences). typecheck/lint/build/test verdi senza `.env`.
-- **Per la verifica live Fase 3 servono:** RESEND_API_KEY, OUTREACH_FROM_EMAIL (dominio
-  verificato con SPF/DKIM/DMARC), RESEND_WEBHOOK_SECRET + webhook configurato su Resend verso
-  `https://nodomatic.com/api/webhooks/resend`, e l'app deployata/raggiungibile da Inngest.
-- **Note sessione precedente:** (1) Scaffold Fase 0. (2) Fase 1: login + ruoli, seed admin,
-  campagne (Server Action + Zod), Apify + PageSpeed reali, Inngest scrape→audit→scoring→DB,
-  vista campagne/prospect, migrazioni, test scoring (7/7). (3) Fase 2: generazione AI con Claude
-  Haiku (output JSON strutturato via Zod), Inngest "generate-content" triggerata dai prospect
-  qualificati, report data layer, screenshot del sito catturato da PageSpeed → R2 (S3-compatibile),
-  landing `/p/[slug]` curata (screenshot + metriche + analisi + proposta + CTA), tracking visite
-  con beacon JS e IP hashato. `pnpm typecheck && lint && build && test` verdi senza `.env`.
-- **Da verificare live (servono chiavi):** `.env.local` con DATABASE_URL (Neon), APIFY_TOKEN,
-  PAGESPEED_API_KEY, ANTHROPIC_API_KEY, R2_* → `pnpm db:push` → `pnpm db:seed` → crea campagna →
-  Inngest scrape+audit, i qualificati generano report → apri `/p/[slug]` e vedi la landing.
-- **Decisione presa:** screenshot ricavato da PageSpeed Insights (niente provider dedicato →
-  §13.3 risolta pragmaticamente, da confermare). Rimandato: tech-detect per `outdatedTech`.
-- **Blocchi/decisioni aperte:** vedi sezione 13. Restano da fornire le chiavi sopra.
+> Lo stato e il piano operativo vivono in [`docs/ROADMAP.md`](ROADMAP.md) (fonte unica, con
+> storico sintetico e stato ✅/🔜/⏸️ per area). La cronologia narrativa dettagliata è in
+> [`docs/HISTORY.md`](HISTORY.md). Aggiorna quei due file a fine sessione (skill `/pre-merge`),
+> non questa sezione.
 
 ---
 
