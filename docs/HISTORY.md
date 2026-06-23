@@ -10,6 +10,14 @@ Convenzione: voce più recente **in cima**, sotto `## Cosa è stato fatto`, come
 
 ## Cosa è stato fatto
 
+### Sessione 2026-06-23 — Backlog evoluzione prodotto + chiarimento n8n
+- **Verifica n8n**: confermato che Nodomatic **non usa n8n** (nessuna dipendenza; occorrenza nel
+  lock file = falso positivo in un hash). Orchestrazione già in casa con Inngest. n8n nel PRD è solo
+  un VPS esterno preesistente di RT Studio (ipotesi hosting Plausible/Umami). Nessun bisogno di introdurlo.
+- **ROADMAP**: aggiunta sezione "Evoluzione futura — backlog idee (da valutare ❓)" con 15 aree
+  (acquisizione/prospect, gestione clienti/digital marketing, trasversali) + nota n8n. Nuovo stato
+  legenda `❓ da valutare / decidere`. Tutte le voci restano da decidere esplicitamente e costruire per fasi.
+
 ### Sessione 2026-06-21 — Rituale di sviluppo + preparazione go-live
 - **Rituale di sviluppo** introdotto: trittico di memoria `CLAUDE.md` (sempre caricato, snello),
   `docs/ROADMAP.md` (piano + storico sintetico), `docs/HISTORY.md` (questo archivio). Aggiunti
