@@ -5,6 +5,31 @@
 
 Legenda stato: ✅ fatto · 🔜 prossimo · ⏸️ in pausa / posticipato · ❓ da valutare / decidere.
 
+## Prossimi passi (handoff → sessione locale)
+
+> Contesto: l'utente lavora ora in **locale** (`~/developer/nodomatic`). Vuole fare verifiche e
+> applicare le migrazioni. Divisione dei compiti concordata il 2026-06-23.
+
+**Micro-task immediato proposto (codice, lato Claude):**
+- **A2** — Generare un template `.env.local` commentato a due livelli ("solo login+dashboard" vs
+  "funnel completo") + checklist numerata di cosa incollare dove. *(non ancora fatto — partire da qui)*
+
+**Faccio io (codice → commit/push, nessun segreto):**
+- A1 — chiarire la nota n8n nel `PRD.md`.
+- A3 — rifinitura UX/dashboard (area G).
+- A4 — implementare **una** delle 15 aree future (§Evoluzione) scelta dall'utente, per fasi.
+- A5 — verificare `pnpm typecheck && lint && build` verdi prima di ogni push.
+- A6 — preparare/ricontrollare l'SQL delle migrazioni Drizzle.
+
+**Fa l'utente (account esterni / segreti / sua macchina):**
+- B1 — creare DB **Neon** → `DATABASE_URL` in `.env.local`.
+- B2 — `openssl rand -base64 32` → `BETTER_AUTH_SECRET` (+ `BETTER_AUTH_URL`, `NEXT_PUBLIC_APP_URL`, `IP_HASH_SALT`).
+- B3 — `pnpm db:migrate` (applica `0000`–`0002`, mai applicate) poi `pnpm db:seed` (primo admin via `SEED_ADMIN_*`).
+- B4 — chiavi API per il funnel: Apify, PageSpeed, Anthropic, Resend, R2.
+- B5 — go-live: collegare repo a Vercel + env var + dominio `nodomatic.com`.
+
+**Obiettivo verifica scelto:** _(da confermare)_ "solo login+dashboard" (B1+B2+B3, ~10 min) **oppure** funnel completo (anche B4).
+
 ## Storico (sintetico)
 
 | data | aspetto | voce | PR/commit |
