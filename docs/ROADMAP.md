@@ -11,8 +11,8 @@ Legenda stato: ✅ fatto · 🔜 prossimo · ⏸️ in pausa / posticipato · �
 > applicare le migrazioni. Divisione dei compiti concordata il 2026-06-23.
 
 **Micro-task immediato proposto (codice, lato Claude):**
-- **A2** — Generare un template `.env.local` commentato a due livelli ("solo login+dashboard" vs
-  "funnel completo") + checklist numerata di cosa incollare dove. *(non ancora fatto — partire da qui)*
+- **A2** ✅ — `.env.example` ristrutturato a due livelli ("solo login+dashboard" vs "funnel completo")
+  + guida numerata `docs/SETUP-LOCAL.md` ("cosa incollare dove"). *(fatto 2026-06-24)*
 
 **Faccio io (codice → commit/push, nessun segreto):**
 - A1 — chiarire la nota n8n nel `PRD.md`.
@@ -34,6 +34,7 @@ Legenda stato: ✅ fatto · 🔜 prossimo · ⏸️ in pausa / posticipato · �
 
 | data | aspetto | voce | PR/commit |
 |------|---------|------|-----------|
+| 2026-06-24 | H Go-live | A2: `.env.example` a due livelli + guida `docs/SETUP-LOCAL.md` | _questa sessione_ |
 | 2026-06-23 | Evoluzione | backlog 15 aree future (❓) + chiarimento n8n (non usato) | _questa sessione_ |
 | 2026-06-21 | H Go-live | pin Node 22.x, build verde, deploy Vercel avviato | `7eca253` |
 | 2026-06-21 | — Processo | fix branch orfano: `main` allineato + passo "atterraggio su main" nel rituale | _questa sessione_ |
@@ -82,7 +83,7 @@ Funzionale (shadcn/ui new-york, recharts). Rifinitura visuale e coerenza dashboa
 Codice builda verde senza segreti; `engines.node = 22.x`. **In corso:** deploy su Vercel
 (team `rt-studio`) — vedi "Azioni manuali in sospeso" in CLAUDE.md. **Da fare:** collegare
 DATABASE_URL Neon, env var, `pnpm db:migrate`, seed admin, Inngest sync, Resend webhook,
-dominio `nodomatic.com`.
+dominio `nodomatic.com`. Setup env locale a due livelli: guida passo-passo in [`SETUP-LOCAL.md`](SETUP-LOCAL.md).
 
 ### I — Wow / AI avanzata ⏸️
 Moduli futuri posticipati dall'utente: `geo` (AI visibility tracker) e `digital-pr` (earned
