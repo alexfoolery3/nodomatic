@@ -10,6 +10,23 @@ Convenzione: voce più recente **in cima**, sotto `## Cosa è stato fatto`, come
 
 ## Cosa è stato fatto
 
+### Sessione 2026-06-24 — Template `.env` a due livelli + guida setup locale (A2)
+- **Task A2** (handoff → sessione locale, lato Claude): preparato il setup env per far girare l'app
+  in locale senza segreti versionati.
+- **`.env.example`** ristrutturato in **due livelli** espliciti: LIVELLO 1 = solo login+dashboard
+  (`NEXT_PUBLIC_APP_URL`, `DATABASE_URL` `[B1]`, `BETTER_AUTH_*` + `IP_HASH_SALT` `[B2]`,
+  `SEED_ADMIN_*` `[B3]`); LIVELLO 2 = funnel completo + reporting (Inngest, Apify, PageSpeed,
+  Anthropic, Browserless, Resend, R2, Apollo, chiavi reporting), ogni chiave annotata con quando
+  serve. Nessuna variabile rimossa: solo riordino + commenti + riferimenti incrociati `[B1]…[B4]`
+  alla ROADMAP. `.env.example` resta l'unico template versionato (`.env.local` gitignored).
+- **Nuovo `docs/SETUP-LOCAL.md`**: guida operativa numerata "cosa incollare dove". Passi 1–9 per il
+  LIVELLO 1 (`openssl rand -base64 32`, `pnpm db:migrate`, `pnpm db:seed`, `pnpm dev`), passi 10–19
+  per il LIVELLO 2 (con nota che Inngest in locale gira senza chiavi via `npx inngest-cli dev`), più
+  promemoria build-green (`typecheck && lint && build` verdi senza segreti).
+- **Verifiche**: confermato che gli script `db:migrate`/`db:seed`/`dev`/`build` esistono in
+  `package.json` e che le migrazioni `0000`–`0002` sono presenti in `drizzle/`. Modifiche solo a
+  docs + `.env.example`: nessun codice sorgente toccato, build verde per costruzione.
+
 ### Sessione 2026-06-23 — Backlog evoluzione prodotto + chiarimento n8n
 - **Verifica n8n**: confermato che Nodomatic **non usa n8n** (nessuna dipendenza; occorrenza nel
   lock file = falso positivo in un hash). Orchestrazione già in casa con Inngest. n8n nel PRD è solo
