@@ -10,6 +10,28 @@ Convenzione: voce più recente **in cima**, sotto `## Cosa è stato fatto`, come
 
 ## Cosa è stato fatto
 
+### Sessione 2026-06-25 — Go-live (DB+admin live), brand system Figma, sito vetrina (Home)
+- **Go-live / DB**: DB **Neon** provisionato via **integrazione Vercel** e collegato al progetto Vercel
+  `rt-studio/nodomatic` (env `DATABASE_URL` su tutti gli ambienti). Migrazioni `0000`–`0002` **applicate**
+  con migrator HTTP `drizzle-orm/neon-http` (aggira il driver websocket di Neon che su Node 20 non gira) e
+  **admin seedato** (`alessandropiazza00@gmail.com`). Impostate su Vercel prod `BETTER_AUTH_SECRET/URL`,
+  `NEXT_PUBLIC_APP_URL`, `IP_HASH_SALT` + redeploy → **login admin live** su `nodomatic.vercel.app`.
+  Progetto Vercel creato e repo GitHub collegato (push = deploy). `.vercelignore` aggiunto (no segreti nel deploy).
+- **Brand identity (Figma)**: creato file *Nodomatic — Brand System* (team RT Studio). Direzione
+  **metallica** (grigio/nero/bianco/acciaio, font **Geist**), logo **monogramma "N" a nodi** (concept A).
+  Brand Board (palette Metal, tipografia, token, regole) + logo come componenti + Home mockup.
+- **Decisione architetturale**: `nodomatic.com` = **sito vetrina agency** (automazione/marketing/ads);
+  l'app interna (Prospector) → **`app.nodomatic.com`** (sottodominio), nascosta al pubblico.
+- **IA sito**: struttura **servizi × mercati** (4 servizi, 12 settori, matrice; template ricorrenti:
+  Home, Servizio, Settore, Soluzione servizio×settore, Chi siamo, Contatti).
+- **Sito vetrina — Home (codice)**: implementata Home + `/contatti` in Next.js. Route group pubblico
+  `src/app/(site)/` con layout (Navbar+Footer) e tema **`.site` scoped** (variabili metalliche in
+  `globals.css`, non tocca la dashboard). Font **Geist** via package `geist`. Componenti riusabili
+  `src/components/site/*`, contenuti `src/content/site.ts`, server action form `src/lib/actions/contact.ts`
+  (Resend-se-configurato / fallback graceful). Rimossa la vecchia landing Prospector (`src/app/page.tsx`).
+  H1 sobrio "Tecnologia e marketing, progettati con metodo.", stat band neutre, manifesto "Marketing
+  professionale, non solo per le grandi aziende.". Build verde senza segreti; verifica visiva locale ok.
+
 ### Sessione 2026-06-24 — Template `.env` a due livelli + guida setup locale (A2)
 - **Task A2** (handoff → sessione locale, lato Claude): preparato il setup env per far girare l'app
   in locale senza segreti versionati.

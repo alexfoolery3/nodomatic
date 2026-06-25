@@ -1,0 +1,8 @@
+# Mai caricare i file env locali nel deploy (i segreti vivono nelle env var del progetto Vercel)
+.env
+.env.local
+.env.*.local
+.env*.local
+
+# Artefatti locali
+.vercel
