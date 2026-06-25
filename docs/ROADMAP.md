@@ -16,9 +16,10 @@ Legenda stato: ✅ fatto · 🔜 prossimo · ⏸️ in pausa / posticipato · �
 - ✅ Env auth su Vercel prod + redeploy → **login admin live** su `nodomatic.vercel.app`.
 - ✅ Brand system in Figma (metallico, Geist, logo "N" a nodi) + IA servizi×mercati.
 - ✅ **Home + /contatti** del sito vetrina in codice (route group `(site)`, tema `.site`, Geist).
+- ✅ **Soluzione servizio×settore** (`/{servizio}-per-{settore}`): Automazioni × 12 settori (SSG) + **Chi siamo**.
 
 **Prossimo (sito vetrina, per fasi):**
-- 🔜 Template ricorrenti: Servizio, Settore, **Soluzione servizio×settore** (redesign `automazioni-per-[settore]`), Chi siamo.
+- 🔜 Hub **Servizio** (`/servizi/[servizio]`) e **Settore** (`/settori/[settore]`); estendere la matrice agli altri servizi.
 - 🔜 Varianti **tema chiaro** + **mobile** rifinite; pagine in codice dai template Figma.
 - 🔜 Chiavi funnel (Apify/PageSpeed/Anthropic/Resend/R2/Inngest) — le inserisce l'utente.
 - 🔜 Dominio `nodomatic.com` + sottodominio `app.nodomatic.com`.
@@ -27,6 +28,7 @@ Legenda stato: ✅ fatto · 🔜 prossimo · ⏸️ in pausa / posticipato · �
 
 | data | aspetto | voce | PR/commit |
 |------|---------|------|-----------|
+| 2026-06-25 | G Sito vetrina | Template soluzione servizio×settore (Automazioni × 12, SSG) + Chi siamo + nav/footer | _branch sessione_ |
 | 2026-06-25 | G Sito vetrina | Home + /contatti agency in codice (route group `(site)`, tema `.site`, Geist) | _branch sessione_ |
 | 2026-06-25 | H Go-live | DB Neon via Vercel + migrazioni applicate + admin **live** su Vercel | _questa sessione_ |
 | 2026-06-25 | Brand | brand system Figma (metallico, Geist, logo "N") + IA servizi×mercati + decisione vetrina/app-sottodominio | _Figma_ |
