@@ -5,7 +5,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL("https://nodomatic.vercel.app"),
   title: {
-    default: "Nodomatic — Agency di automazione, marketing e AI",
+    default: "Nodomatic · Agency di automazione, marketing e AI",
     template: "%s · Nodomatic",
   },
   description:

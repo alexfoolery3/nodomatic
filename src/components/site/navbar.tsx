@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Logo } from "./logo";
 import { SiteButton } from "./site-button";
+import { MobileMenu } from "./mobile-menu";
 import { NAV_LINKS, PRIMARY_CTA } from "@/content/site";
 
 export function Navbar() {
@@ -22,11 +23,7 @@ export function Navbar() {
             {PRIMARY_CTA.label}
           </SiteButton>
         </nav>
-        <div className="md:hidden">
-          <SiteButton href={PRIMARY_CTA.href} size="sm">
-            {PRIMARY_CTA.label}
-          </SiteButton>
-        </div>
+        <MobileMenu />
       </div>
     </header>
   );

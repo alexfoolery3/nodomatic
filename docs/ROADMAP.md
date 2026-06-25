@@ -17,10 +17,12 @@ Legenda stato: ✅ fatto · 🔜 prossimo · ⏸️ in pausa / posticipato · �
 - ✅ Brand system in Figma (metallico, Geist, logo "N" a nodi) + IA servizi×mercati.
 - ✅ **Home + /contatti** del sito vetrina in codice (route group `(site)`, tema `.site`, Geist).
 - ✅ **Soluzione servizio×settore** (`/{servizio}-per-{settore}`): Automazioni × 12 settori (SSG) + **Chi siamo**.
+- ✅ **Hub Servizio/Settore** (`/servizi/[servizio]`, `/settori/[settore]`) + indici + breadcrumb; matrice estesa a
+  **4 servizi × 12 settori = 48 soluzioni**; mesh IA Home→hub→soluzione; **menu mobile** + polish responsive. Figma: 2 template hub.
 
-**Prossimo (sito vetrina, per fasi):**
-- 🔜 Hub **Servizio** (`/servizi/[servizio]`) e **Settore** (`/settori/[settore]`); estendere la matrice agli altri servizi.
-- 🔜 Varianti **tema chiaro** + **mobile** rifinite; pagine in codice dai template Figma.
+**Prossimo (sito vetrina / go-live):**
+- ⏸️ **Tema chiaro** del sito (rinviato dall'utente; base resta dark-only).
+- 🔜 Rifinitura copy dei nuovi servizi (`ads`/`siti`/`social`) se necessario.
 - 🔜 Chiavi funnel (Apify/PageSpeed/Anthropic/Resend/R2/Inngest) — le inserisce l'utente.
 - 🔜 Dominio `nodomatic.com` + sottodominio `app.nodomatic.com`.
 
@@ -28,6 +30,7 @@ Legenda stato: ✅ fatto · 🔜 prossimo · ⏸️ in pausa / posticipato · �
 
 | data | aspetto | voce | PR/commit |
 |------|---------|------|-----------|
+| 2026-06-25 | G Sito vetrina | Hub Servizio/Settore + indici + matrice 4×12 (48 SSG) + mesh/breadcrumb + menu mobile; Figma 2 template | _branch sessione_ |
 | 2026-06-25 | G Sito vetrina | Template soluzione servizio×settore (Automazioni × 12, SSG) + Chi siamo + nav/footer | _branch sessione_ |
 | 2026-06-25 | G Sito vetrina | Home + /contatti agency in codice (route group `(site)`, tema `.site`, Geist) | _branch sessione_ |
 | 2026-06-25 | H Go-live | DB Neon via Vercel + migrazioni applicate + admin **live** su Vercel | _questa sessione_ |
@@ -75,7 +78,9 @@ Function funnel + cron (refresh metriche giornaliero, report mensili) + throttle
 Client condiviso `src/lib/inngest.ts`, un solo `serve()` su `app/api/inngest`.
 
 ### G — Design / UX 🔜
-Funzionale (shadcn/ui new-york, recharts). Rifinitura visuale e coerenza dashboard da fare.
+**Sito vetrina**: brand metallico/Geist; Home + hub Servizio/Settore + matrice 4×12 + indici + breadcrumb +
+menu mobile (responsive) ✅. Tema chiaro ⏸️ (rinviato). **Dashboard** (shadcn/ui new-york, recharts):
+rifinitura visuale e coerenza ancora da fare.
 
 ### H — Go-live (.com / Vercel / Neon) 🔜
 Codice builda verde senza segreti; `engines.node = 22.x`. **In corso:** deploy su Vercel

@@ -16,7 +16,7 @@ export function Hero({
   secondaryCta?: NavLink;
 }) {
   return (
-    <div className="flex flex-col items-center gap-6 py-24 text-center md:py-32">
+    <div className="flex flex-col items-center gap-5 py-16 text-center sm:gap-6 sm:py-24 md:py-32">
       {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
       <h1 className="max-w-3xl text-balance text-4xl font-semibold tracking-tight text-site-text sm:text-5xl md:text-6xl">
         {title}

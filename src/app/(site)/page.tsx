@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Section } from "@/components/site/section";
 import { Hero } from "@/components/site/hero";
 import { Eyebrow } from "@/components/site/eyebrow";
@@ -10,18 +11,18 @@ import { CtaBand } from "@/components/site/cta-band";
 import {
   HERO,
   MANIFESTO,
-  SERVICES,
   SECTORS,
   PROCESS,
   STATS,
   PRIMARY_CTA,
 } from "@/content/site";
+import { serviceCards } from "@/content/solutions";
 
 export const metadata: Metadata = {
-  title: "Nodomatic — Agency di automazione, marketing e AI",
+  title: "Nodomatic · Agency di automazione, marketing e AI",
   description: HERO.subtitle,
   openGraph: {
-    title: "Nodomatic — Agency di automazione, marketing e AI",
+    title: "Nodomatic · Agency di automazione, marketing e AI",
     description: HERO.subtitle,
     url: "/",
     siteName: "Nodomatic",
@@ -44,7 +45,7 @@ export default function HomePage() {
       </Section>
 
       <Section surface="surface" className="border-y border-site-line">
-        <p className="mx-auto max-w-3xl py-16 text-center text-2xl font-medium tracking-tight text-site-text md:text-3xl">
+        <p className="mx-auto max-w-3xl py-12 text-center text-xl font-medium tracking-tight text-site-text sm:py-16 sm:text-2xl md:text-3xl">
           {MANIFESTO}
         </p>
       </Section>
@@ -55,8 +56,14 @@ export default function HomePage() {
           I nostri servizi
         </h2>
         <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {SERVICES.map((s) => (
-            <ServiceCard key={s.title} {...s} />
+          {serviceCards().map((card) => (
+            <Link key={card.slug} href={card.href} className="block">
+              <ServiceCard
+                icon={card.icon}
+                title={card.name}
+                description={card.tagline}
+              />
+            </Link>
           ))}
         </div>
       </Section>
@@ -74,7 +81,7 @@ export default function HomePage() {
             <SectorChip
               key={s.slug}
               label={s.name}
-              href={`/automazioni-per-${s.slug}`}
+              href={`/settori/${s.slug}`}
             />
           ))}
         </div>
