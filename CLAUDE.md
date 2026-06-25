@@ -82,8 +82,13 @@ Verifica sempre prima di committare: `pnpm typecheck && pnpm lint && pnpm build`
 - Scoring (PRD §6): `src/modules/prospector/scoring.ts` — pura, testabile.
 - Funnel jobs: `src/modules/prospector/inngest/functions.ts`, serviti da `app/api/inngest`.
 - Landing prospect: `app/p/[slug]/page.tsx`. **Sito vetrina (pubblico): `src/app/(site)/`** (route group,
-  tema `.site` scoped in `globals.css`; componenti `src/components/site/`, contenuti `src/content/site.ts`,
-  action form `src/lib/actions/contact.ts`). Dashboard: `app/(dashboard)`.
+  tema `.site` scoped in `globals.css`; componenti `src/components/site/`, contenuti `src/content/site.ts`
+  + `src/content/solutions.ts`, action form `src/lib/actions/contact.ts`). Rotte: Home, `/contatti`,
+  `/chi-siamo`, **`/servizi` + `/servizi/[servizio]`** (hub servizio), **`/settori` + `/settori/[settore]`**
+  (hub settore), **`/[slug]`** = soluzione servizio×settore (matrice 4 servizi × 12 settori = **48 pagine SSG**
+  da `allSolutions()`). Mesh: Home→hub→soluzione + `breadcrumb.tsx` + cross-link. Menu mobile
+  `mobile-menu.tsx`: drawer in **portale su `document.body`** (la navbar ha `backdrop-blur` → containing
+  block per i `fixed`, che schiaccerebbe `inset-0`). Dashboard: `app/(dashboard)`.
 
 ## Decisioni prese
 
@@ -91,6 +96,9 @@ Verifica sempre prima di committare: `pnpm typecheck && pnpm lint && pnpm build`
   **app.nodomatic.com** (sottodominio, nascosta al pubblico).
 - Brand: tema **metallico** (grigio/nero/bianco/acciaio), font **Geist**, logo monogramma "N" a nodi.
   Sistema di brand in Figma: file *Nodomatic — Brand System* (team RT Studio).
+- **Copy sito vetrina: niente em-dash ("—")** nel testo/metadata, usare virgole/punti (separatore `·` ammesso).
+- **Slug servizi (URL soluzioni): brevi** — `automazioni`, `ads`, `siti`, `social` (es. `/ads-per-ristoranti-food`).
+- **Tema chiaro del sito: rinviato** (scelta utente). Base dark-only; quando servirà → token semantici + `@theme inline` override.
 - Dominio: **nodomatic.com**. Sottodomini per moduli/funzioni in seguito.
 - Next.js **15** (pinned), pnpm, Node 22.
 

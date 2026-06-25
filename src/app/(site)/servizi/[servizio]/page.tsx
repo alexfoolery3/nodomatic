@@ -2,55 +2,54 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Check } from "lucide-react";
 import { Section } from "@/components/site/section";
+import { Breadcrumb } from "@/components/site/breadcrumb";
 import { Eyebrow } from "@/components/site/eyebrow";
 import { ServiceCard } from "@/components/site/service-card";
+import { SectorChip } from "@/components/site/sector-chip";
 import { ProcessStep } from "@/components/site/process-step";
 import { CtaBand } from "@/components/site/cta-band";
 import { SiteButton } from "@/components/site/site-button";
-import { Breadcrumb } from "@/components/site/breadcrumb";
 import { PROCESS, PRIMARY_CTA } from "@/content/site";
-import { allSolutions, getSolution } from "@/content/solutions";
+import { allServices, getService, solutionsForService } from "@/content/solutions";
 
-/** Solo le combinazioni servizio×settore generate esistono; le altre → 404. */
+/** Solo i quattro servizi generati esistono; gli altri slug → 404. */
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return allSolutions().map((s) => ({ slug: s.slug }));
+  return allServices().map((s) => ({ servizio: s.slug }));
 }
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ servizio: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
-  const sol = getSolution(slug);
-  if (!sol) return {};
-  const title = `${sol.service.name} per ${sol.sector.name}`;
+  const { servizio } = await params;
+  const service = getService(servizio);
+  if (!service) return {};
   return {
-    title,
-    description: `${sol.service.name} su misura per ${sol.sector.name.toLowerCase()}. ${sol.service.lead}`,
+    title: service.name,
+    description: service.lead,
     openGraph: {
-      title: `${title} · Nodomatic`,
-      description: sol.service.lead,
-      url: `/${slug}`,
+      title: `${service.name} · Nodomatic`,
+      description: service.lead,
+      url: `/servizi/${servizio}`,
       type: "website",
       locale: "it_IT",
     },
   };
 }
 
-export default async function SolutionPage({
+export default async function ServizioPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ servizio: string }>;
 }) {
-  const { slug } = await params;
-  const sol = getSolution(slug);
-  if (!sol) notFound();
+  const { servizio } = await params;
+  const service = getService(servizio);
+  if (!service) notFound();
 
-  const { service, sector, challenges } = sol;
-  const sectorLower = sector.name.toLowerCase();
+  const solutions = solutionsForService(service.slug);
 
   return (
     <>
@@ -58,18 +57,17 @@ export default async function SolutionPage({
         <Breadcrumb
           items={[
             { label: "Home", href: "/" },
-            { label: service.name, href: `/servizi/${service.slug}` },
-            { label: sector.name, href: `/settori/${sector.slug}` },
-            { label: `${service.name} per ${sectorLower}` },
+            { label: "Servizi", href: "/servizi" },
+            { label: service.name },
           ]}
         />
       </Section>
 
       <Section>
-        <div className="flex flex-col items-start gap-6 py-14 sm:py-20 md:py-28">
-          <Eyebrow>{service.name}</Eyebrow>
+        <div className="flex flex-col items-start gap-6 py-16 md:py-24">
+          <Eyebrow>Servizio</Eyebrow>
           <h1 className="max-w-3xl text-balance text-4xl font-semibold tracking-tight text-site-text sm:text-5xl md:text-[56px]">
-            {service.name} per {sectorLower}
+            {service.name}
           </h1>
           <p className="max-w-2xl text-lg text-site-muted">{service.lead}</p>
           <SiteButton href={PRIMARY_CTA.href} variant="primary">
@@ -77,29 +75,6 @@ export default async function SolutionPage({
           </SiteButton>
         </div>
       </Section>
-
-      {challenges.length ? (
-        <Section
-          surface="surface"
-          className="border-y border-site-line"
-          containerClassName="py-16 md:py-20"
-        >
-          <Eyebrow>Le sfide</Eyebrow>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-site-text md:text-4xl">
-            Cosa rallenta il lavoro ogni giorno
-          </h2>
-          <ul className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-            {challenges.map((c) => (
-              <li
-                key={c}
-                className="rounded-[14px] border border-site-line bg-site-canvas p-5 text-[15px] leading-relaxed text-site-body"
-              >
-                {c}
-              </li>
-            ))}
-          </ul>
-        </Section>
-      ) : null}
 
       <Section containerClassName="py-16 md:py-24">
         <Eyebrow>{service.solutionsEyebrow}</Eyebrow>
@@ -118,6 +93,22 @@ export default async function SolutionPage({
         className="border-y border-site-line"
         containerClassName="py-16 md:py-20"
       >
+        <Eyebrow>Per il tuo settore</Eyebrow>
+        <h2 className="mt-3 text-3xl font-semibold tracking-tight text-site-text md:text-4xl">
+          Costruito sul tuo mercato
+        </h2>
+        <div className="mt-8 flex flex-wrap gap-3">
+          {solutions.map((sol) => (
+            <SectorChip
+              key={sol.slug}
+              label={sol.sector.name}
+              href={`/${sol.slug}`}
+            />
+          ))}
+        </div>
+      </Section>
+
+      <Section containerClassName="py-16 md:py-24">
         <Eyebrow>Come lavoriamo</Eyebrow>
         <h2 className="mt-3 text-3xl font-semibold tracking-tight text-site-text md:text-4xl">
           Il percorso, passo per passo
@@ -129,7 +120,11 @@ export default async function SolutionPage({
         </div>
       </Section>
 
-      <Section containerClassName="py-16 md:py-20">
+      <Section
+        surface="surface"
+        className="border-y border-site-line"
+        containerClassName="py-16 md:py-20"
+      >
         <Eyebrow>Perché Nodomatic</Eyebrow>
         <ul className="mt-6 flex flex-col gap-3">
           {service.benefits.map((b) => (
@@ -139,25 +134,6 @@ export default async function SolutionPage({
             </li>
           ))}
         </ul>
-      </Section>
-
-      <Section containerClassName="pb-4">
-        <div className="flex flex-wrap gap-3">
-          <SiteButton
-            href={`/servizi/${service.slug}`}
-            variant="secondary"
-            size="sm"
-          >
-            Tutte le soluzioni {service.name}
-          </SiteButton>
-          <SiteButton
-            href={`/settori/${sector.slug}`}
-            variant="secondary"
-            size="sm"
-          >
-            Tutti i servizi per {sectorLower}
-          </SiteButton>
-        </div>
       </Section>
 
       <Section containerClassName="py-16 md:py-24">

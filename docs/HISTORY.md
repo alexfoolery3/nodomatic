@@ -10,6 +10,39 @@ Convenzione: voce più recente **in cima**, sotto `## Cosa è stato fatto`, come
 
 ## Cosa è stato fatto
 
+### Sessione 2026-06-25 — Sito vetrina: hub Servizio/Settore, matrice 4×12, rifinitura mobile (Figma + ultracode)
+- **Figma (Fase A)**: disegnati nel file *Nodomatic — Brand System* (pagina "Pages", accanto al mockup Home)
+  i due template mancanti **Hub Servizio** (`22:2`) e **Hub Settore** (`24:2`), desktop tema dark, riusando i
+  token brand (scala Metal, neutri dark, Geist) come reference visiva prima del codice. Costruiti via Figma MCP
+  (`use_figma`, auto-layout); nel file non ci sono componenti pubblicati (frame flat) → stili ricreati a mano.
+- **Data layer (B1)**: `src/content/solutions.ts` — `ServiceDetail` esteso con `icon`/`tagline`/`solutionsEyebrow`;
+  `SERVICES_DETAIL` popolato con i **4 servizi** (`automazioni`, `ads`, `siti`, `social`), copy IT sobrio senza
+  em-dash; nuovi helper `allServices/getService/getSector/solutionsForService/solutionsForSector/serviceCards`
+  e `allSolutions()` che ora itera tutti i servizi → **48 soluzioni** (4×12). `src/content/site.ts`: rimossi
+  `SERVICES` e type `Service` (fonte unica = `SERVICES_DETAIL`), `NAV_LINKS`/`FOOTER_COLUMNS` ripuntati a
+  `/servizi` e `/settori`.
+- **Route + mesh IA (B2/B3)**: nuove `src/app/(site)/servizi/[servizio]/page.tsx` (Hub Servizio, SSG 4) e
+  `settori/[settore]/page.tsx` (Hub Settore, SSG 12), più gli indici `servizi/page.tsx` e `settori/page.tsx`;
+  componente `breadcrumb.tsx`. `[slug]/page.tsx` generalizzato (eyebrow da `service.solutionsEyebrow`, CTA non
+  più "automazioni"-specifica) + breadcrumb + cross-link ai due hub. Home: card servizi → `/servizi/[slug]`,
+  chip settori → `/settori/[slug]`. Matrice ora **48 pagine** soluzione.
+- **Mobile (B4)**: nuovo `mobile-menu.tsx` (hamburger + drawer full-screen, a11y: `aria-expanded/controls`,
+  Esc, blocco scroll body, chiusura su cambio rotta) montato in `navbar.tsx`; polish responsive su `stat-band`,
+  `service-card`, `cta-band`, `process-step`, `hero` (+ hero `[slug]` e manifesto Home). **Bug trovato e risolto
+  in verifica**: il drawer `fixed inset-0` era schiacciato a 72px perché la navbar usa `backdrop-blur`
+  (`backdrop-filter` crea un containing block per i discendenti `fixed`) → contenuto della pagina visibile sotto
+  il menu. Fix: **drawer portato su `document.body`** con `createPortal`, avvolto in `.site font-sans md:hidden`
+  (ripristina token tema/font fuori dal route group). Verificato in preview live a 375px.
+- **Esecuzione**: Fase B costruita con **workflow multi-agente (ultracode)** — foundation (data layer +
+  breadcrumb) → build-out parallelo con regola "un file = un agent" → verify build-green. 9 agent.
+- **Brand copy**: bonificati gli em-dash residui nei metadata (`page.tsx`, root `app/layout.tsx`) → separatore
+  `·`. Regola "niente em-dash nel copy" aggiunta a CLAUDE.md (+ memoria sessione).
+- **Decisioni**: tema chiaro **rinviato** (l'utente non lo vuole ora) → niente refactor token semantici/toggle;
+  slug servizi brevi (`ads/siti/social`); IA a mesh completo (Home→indice→hub→soluzione).
+- **Verifica**: `typecheck + lint + build` verdi **senza segreti** (Node 22+; su Node 20 la build è flaky per la
+  cache `.next`, usato `/usr/local/bin/node` v25 + `.env.local` spostato e ripristinato) → **76/76** pagine
+  statiche. Preview live ok: hub servizio/settore, indici, soluzione nuova `/ads-per-ristoranti-food`, menu mobile.
+
 ### Sessione 2026-06-25 — Go-live (DB+admin live), brand system Figma, sito vetrina (Home)
 - **Go-live / DB**: DB **Neon** provisionato via **integrazione Vercel** e collegato al progetto Vercel
   `rt-studio/nodomatic` (env `DATABASE_URL` su tutti gli ambienti). Migrazioni `0000`–`0002` **applicate**

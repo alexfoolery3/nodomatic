@@ -1,13 +1,10 @@
-import type { LucideIcon } from "lucide-react";
-import { Workflow, Target, LayoutTemplate, MessageSquare } from "lucide-react";
-
 /** Contenuti statici del sito vetrina. Fonte unica riusata da Home e template. */
 
 export type NavLink = { label: string; href: string };
 
 export const NAV_LINKS: NavLink[] = [
-  { label: "Servizi", href: "/#servizi" },
-  { label: "Settori", href: "/#settori" },
+  { label: "Servizi", href: "/servizi" },
+  { label: "Settori", href: "/settori" },
   { label: "Chi siamo", href: "/chi-siamo" },
   { label: "Contatti", href: "/contatti" },
 ];
@@ -23,31 +20,6 @@ export const HERO = {
 
 /** Posizionamento: niente promesse, tono diretto. */
 export const MANIFESTO = "Marketing professionale, non solo per le grandi aziende.";
-
-export type Service = { title: string; description: string; icon: LucideIcon };
-
-export const SERVICES: Service[] = [
-  {
-    title: "Automazioni & AI",
-    description: "Flussi, agenti e CRM che lavorano al posto tuo, ogni giorno.",
-    icon: Workflow,
-  },
-  {
-    title: "Performance Marketing",
-    description: "Meta e Google Ads orientati a lead e clienti reali.",
-    icon: Target,
-  },
-  {
-    title: "Siti & Landing",
-    description: "Siti veloci e landing che convertono, su misura.",
-    icon: LayoutTemplate,
-  },
-  {
-    title: "Social & Contenuti",
-    description: "Contenuti e piani editoriali che costruiscono autorevolezza.",
-    icon: MessageSquare,
-  },
-];
 
 export type Sector = { name: string; slug: string };
 
@@ -90,19 +62,19 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
   {
     title: "Servizi",
     links: [
-      { label: "Automazioni & AI", href: "/#servizi" },
-      { label: "Performance Marketing", href: "/#servizi" },
-      { label: "Siti & Landing", href: "/#servizi" },
-      { label: "Social & Contenuti", href: "/#servizi" },
+      { label: "Automazioni & AI", href: "/servizi/automazioni" },
+      { label: "Performance Marketing", href: "/servizi/ads" },
+      { label: "Siti & Landing", href: "/servizi/siti" },
+      { label: "Social & Contenuti", href: "/servizi/social" },
     ],
   },
   {
     title: "Settori",
     links: [
-      { label: "Immobiliari", href: "/automazioni-per-agenzie-immobiliari" },
-      { label: "Commercialisti", href: "/automazioni-per-studi-commercialisti" },
-      { label: "Legali", href: "/automazioni-per-studi-legali" },
-      { label: "E-commerce", href: "/automazioni-per-ecommerce-negozi-locali" },
+      { label: "Immobiliari", href: "/settori/agenzie-immobiliari" },
+      { label: "Commercialisti", href: "/settori/studi-commercialisti" },
+      { label: "Legali", href: "/settori/studi-legali" },
+      { label: "E-commerce", href: "/settori/ecommerce-negozi-locali" },
     ],
   },
   {

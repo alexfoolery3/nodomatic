@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Check } from "lucide-react";
+import Link from "next/link";
 import { Section } from "@/components/site/section";
 import { Eyebrow } from "@/components/site/eyebrow";
 import { ServiceCard } from "@/components/site/service-card";
@@ -8,49 +8,53 @@ import { ProcessStep } from "@/components/site/process-step";
 import { CtaBand } from "@/components/site/cta-band";
 import { SiteButton } from "@/components/site/site-button";
 import { Breadcrumb } from "@/components/site/breadcrumb";
-import { PROCESS, PRIMARY_CTA } from "@/content/site";
-import { allSolutions, getSolution } from "@/content/solutions";
+import { SECTORS, PROCESS, PRIMARY_CTA } from "@/content/site";
+import {
+  getSector,
+  solutionsForSector,
+  SECTOR_CHALLENGES,
+} from "@/content/solutions";
 
-/** Solo le combinazioni servizio×settore generate esistono; le altre → 404. */
+/** Solo i settori definiti hanno una pagina; gli altri → 404. */
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return allSolutions().map((s) => ({ slug: s.slug }));
+  return SECTORS.map((s) => ({ settore: s.slug }));
 }
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ settore: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
-  const sol = getSolution(slug);
-  if (!sol) return {};
-  const title = `${sol.service.name} per ${sol.sector.name}`;
+  const { settore } = await params;
+  const sector = getSector(settore);
+  if (!sector) return {};
   return {
-    title,
-    description: `${sol.service.name} su misura per ${sol.sector.name.toLowerCase()}. ${sol.service.lead}`,
+    title: sector.name,
+    description: `Automazione, marketing e siti su misura per ${sector.name.toLowerCase()}. Soluzioni costruite sul modo in cui lavori.`,
     openGraph: {
-      title: `${title} · Nodomatic`,
-      description: sol.service.lead,
-      url: `/${slug}`,
+      title: `${sector.name} · Nodomatic`,
+      description: `Soluzioni su misura per ${sector.name.toLowerCase()}.`,
+      url: `/settori/${settore}`,
       type: "website",
       locale: "it_IT",
     },
   };
 }
 
-export default async function SolutionPage({
+export default async function SettoreHubPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ settore: string }>;
 }) {
-  const { slug } = await params;
-  const sol = getSolution(slug);
-  if (!sol) notFound();
+  const { settore } = await params;
+  const sector = getSector(settore);
+  if (!sector) notFound();
 
-  const { service, sector, challenges } = sol;
   const sectorLower = sector.name.toLowerCase();
+  const challenges = SECTOR_CHALLENGES[sector.slug] ?? [];
+  const solutions = solutionsForSector(sector.slug);
 
   return (
     <>
@@ -58,20 +62,21 @@ export default async function SolutionPage({
         <Breadcrumb
           items={[
             { label: "Home", href: "/" },
-            { label: service.name, href: `/servizi/${service.slug}` },
-            { label: sector.name, href: `/settori/${sector.slug}` },
-            { label: `${service.name} per ${sectorLower}` },
+            { label: "Settori", href: "/settori" },
+            { label: sector.name },
           ]}
         />
       </Section>
 
       <Section>
-        <div className="flex flex-col items-start gap-6 py-14 sm:py-20 md:py-28">
-          <Eyebrow>{service.name}</Eyebrow>
+        <div className="flex flex-col items-start gap-6 py-16 md:py-24">
+          <Eyebrow>Settore</Eyebrow>
           <h1 className="max-w-3xl text-balance text-4xl font-semibold tracking-tight text-site-text sm:text-5xl md:text-[56px]">
-            {service.name} per {sectorLower}
+            Soluzioni per {sectorLower}
           </h1>
-          <p className="max-w-2xl text-lg text-site-muted">{service.lead}</p>
+          <p className="max-w-2xl text-lg text-site-muted">
+            Automazione, marketing e siti su misura per il modo in cui lavori.
+          </p>
           <SiteButton href={PRIMARY_CTA.href} variant="primary">
             {PRIMARY_CTA.label}
           </SiteButton>
@@ -102,13 +107,19 @@ export default async function SolutionPage({
       ) : null}
 
       <Section containerClassName="py-16 md:py-24">
-        <Eyebrow>{service.solutionsEyebrow}</Eyebrow>
+        <Eyebrow>I nostri servizi</Eyebrow>
         <h2 className="mt-3 text-3xl font-semibold tracking-tight text-site-text md:text-4xl">
-          La nostra soluzione
+          Tutto quello che possiamo fare per te
         </h2>
-        <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2">
-          {service.solutions.map((s) => (
-            <ServiceCard key={s.title} {...s} />
+        <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {solutions.map((sol) => (
+            <Link key={sol.slug} href={`/${sol.slug}`} className="block">
+              <ServiceCard
+                icon={sol.service.icon}
+                title={sol.service.name}
+                description={sol.service.tagline}
+              />
+            </Link>
           ))}
         </div>
       </Section>
@@ -129,41 +140,10 @@ export default async function SolutionPage({
         </div>
       </Section>
 
-      <Section containerClassName="py-16 md:py-20">
-        <Eyebrow>Perché Nodomatic</Eyebrow>
-        <ul className="mt-6 flex flex-col gap-3">
-          {service.benefits.map((b) => (
-            <li key={b} className="flex items-start gap-3 text-lg text-site-body">
-              <Check className="mt-1 size-5 shrink-0 text-metal-300" />
-              {b}
-            </li>
-          ))}
-        </ul>
-      </Section>
-
-      <Section containerClassName="pb-4">
-        <div className="flex flex-wrap gap-3">
-          <SiteButton
-            href={`/servizi/${service.slug}`}
-            variant="secondary"
-            size="sm"
-          >
-            Tutte le soluzioni {service.name}
-          </SiteButton>
-          <SiteButton
-            href={`/settori/${sector.slug}`}
-            variant="secondary"
-            size="sm"
-          >
-            Tutti i servizi per {sectorLower}
-          </SiteButton>
-        </div>
-      </Section>
-
       <Section containerClassName="py-16 md:py-24">
         <CtaBand
-          title="Parliamo della tua attività."
-          subtitle="Prenota una call: vediamo insieme cosa ha più senso per la tua attività."
+          title="Soluzioni su misura per la tua attivita."
+          subtitle="Prenota una call: vediamo insieme da dove partire."
           cta={PRIMARY_CTA}
         />
       </Section>
