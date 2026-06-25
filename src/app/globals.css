@@ -46,6 +46,27 @@
   --ring: oklch(0.556 0 0);
 }
 
+/* ---- Sito vetrina: tema metallico dark, SCOPED (.site) — non tocca la dashboard ---- */
+.site {
+  --site-canvas: #0a0a0a;
+  --site-surface: #171717;
+  --site-surface-alt: #1f1f1f;
+  --site-line: #262626;
+  --site-text: #fafafa;
+  --site-body: #d4d4d4;
+  --site-muted: #a3a3a3;
+  --metal-50: #f3f5f7;
+  --metal-100: #e4e7eb;
+  --metal-200: #c9ced5;
+  --metal-300: #a8afb8;
+  --metal-400: #868d97;
+  --metal-500: #676e78;
+  --metal-600: #4b515a;
+  --metal-700: #33383f;
+  --metal-800: #1e2227;
+  --metal-900: #14171a;
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -69,6 +90,26 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  /* Font brand */
+  --font-sans: var(--font-geist-sans);
+  /* Utility del sito vetrina (risolvono solo dentro lo scope .site) */
+  --color-site-canvas: var(--site-canvas);
+  --color-site-surface: var(--site-surface);
+  --color-site-surface-alt: var(--site-surface-alt);
+  --color-site-line: var(--site-line);
+  --color-site-text: var(--site-text);
+  --color-site-body: var(--site-body);
+  --color-site-muted: var(--site-muted);
+  --color-metal-50: var(--metal-50);
+  --color-metal-100: var(--metal-100);
+  --color-metal-200: var(--metal-200);
+  --color-metal-300: var(--metal-300);
+  --color-metal-400: var(--metal-400);
+  --color-metal-500: var(--metal-500);
+  --color-metal-600: var(--metal-600);
+  --color-metal-700: var(--metal-700);
+  --color-metal-800: var(--metal-800);
+  --color-metal-900: var(--metal-900);
 }
 
 @layer base {

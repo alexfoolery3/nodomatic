@@ -15,11 +15,15 @@ Nodomatic = ecosistema di automazioni **interne** di RT Studio. Primo modulo: **
 
 ## Promemoria critici
 
-**Azioni manuali in sospeso** (da fare a mano, fuori dal codice):
-- Migrazioni Drizzle `0000`–`0002` da applicare con `pnpm db:migrate` quando `DATABASE_URL` (Neon)
-  sarà impostato. Un solo DB condiviso → si applica una volta. *(Nessuna nuova migration pendente.)*
-- Deploy Vercel avviato ma in sospeso: `deploy_to_vercel` richiede approvazione permesso MCP,
-  oppure collegare il repo a Vercel manualmente (team `rt-studio`).
+**Stato live** *(2026-06-25)*: DB **Neon** collegato via integrazione Vercel; migrazioni `0000`–`0002`
+**applicate**; **admin seedato**; env auth su Vercel prod → **login admin live** su `nodomatic.vercel.app`.
+Progetto Vercel `rt-studio/nodomatic` creato, repo GitHub collegato (**push = deploy**, `main` = prod).
+*Nota Node 20*: `pnpm db:migrate` (drizzle-kit) usa il driver **websocket** che su Node 20 fallisce →
+applicare le migrazioni col **migrator HTTP** (`drizzle-orm/neon-http/migrator`) o usare Node 22.
+
+**Azioni manuali ancora in sospeso:**
+- Chiavi funnel su Vercel (Apify, PageSpeed, Anthropic, Resend+webhook, R2, Inngest sync) — le inserisce l'utente.
+- Dominio `nodomatic.com` (vetrina) + sottodominio `app.nodomatic.com` (app interna).
 
 **Checklist go-live `.com`** (dettaglio in `docs/ROADMAP.md` → area H): DB Neon → env var su Vercel
 (`DATABASE_URL`, `BETTER_AUTH_SECRET/URL`, `NEXT_PUBLIC_APP_URL`, `IP_HASH_SALT`, poi le chiavi in
@@ -77,10 +81,16 @@ Verifica sempre prima di committare: `pnpm typecheck && pnpm lint && pnpm build`
 - Auth: `src/lib/auth.ts` (server), `src/lib/auth-client.ts` (browser), route `app/api/auth/[...all]`.
 - Scoring (PRD §6): `src/modules/prospector/scoring.ts` — pura, testabile.
 - Funnel jobs: `src/modules/prospector/inngest/functions.ts`, serviti da `app/api/inngest`.
-- Landing prospect: `app/p/[slug]/page.tsx`. Landing pubblica: `app/page.tsx`. Dashboard: `app/(dashboard)`.
+- Landing prospect: `app/p/[slug]/page.tsx`. **Sito vetrina (pubblico): `src/app/(site)/`** (route group,
+  tema `.site` scoped in `globals.css`; componenti `src/components/site/`, contenuti `src/content/site.ts`,
+  action form `src/lib/actions/contact.ts`). Dashboard: `app/(dashboard)`.
 
 ## Decisioni prese
 
+- **nodomatic.com = sito vetrina agency** (automazione/marketing/ads); l'app interna (Prospector) →
+  **app.nodomatic.com** (sottodominio, nascosta al pubblico).
+- Brand: tema **metallico** (grigio/nero/bianco/acciaio), font **Geist**, logo monogramma "N" a nodi.
+  Sistema di brand in Figma: file *Nodomatic — Brand System* (team RT Studio).
 - Dominio: **nodomatic.com**. Sottodomini per moduli/funzioni in seguito.
 - Next.js **15** (pinned), pnpm, Node 22.
 
