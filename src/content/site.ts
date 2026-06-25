@@ -1,7 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import { Workflow, Target, LayoutTemplate, MessageSquare } from "lucide-react";
 
-/** Contenuti statici del sito vetrina. Fonte unica riusata da Home e template futuri. */
+/** Contenuti statici del sito vetrina. Fonte unica riusata da Home e template. */
 
 export type NavLink = { label: string; href: string };
 
@@ -9,7 +9,7 @@ export const NAV_LINKS: NavLink[] = [
   { label: "Servizi", href: "/#servizi" },
   { label: "Settori", href: "/#settori" },
   { label: "Chi siamo", href: "/chi-siamo" },
-  { label: "Risorse", href: "/risorse" },
+  { label: "Contatti", href: "/contatti" },
 ];
 
 export const PRIMARY_CTA: NavLink = { label: "Prenota una call", href: "/contatti" };
@@ -49,19 +49,21 @@ export const SERVICES: Service[] = [
   },
 ];
 
-export const SECTORS: string[] = [
-  "Agenzie immobiliari",
-  "Studi commercialisti",
-  "Studi legali",
-  "Agenzie di viaggio",
-  "Palestre & fitness",
-  "Studi dentistici & medici",
-  "Ristoranti & food",
-  "E-commerce & negozi locali",
-  "Automotive & concessionari",
-  "Estetica & beauty",
-  "Edilizia & ristrutturazioni",
-  "Wedding & eventi",
+export type Sector = { name: string; slug: string };
+
+export const SECTORS: Sector[] = [
+  { name: "Agenzie immobiliari", slug: "agenzie-immobiliari" },
+  { name: "Studi commercialisti", slug: "studi-commercialisti" },
+  { name: "Studi legali", slug: "studi-legali" },
+  { name: "Agenzie di viaggio", slug: "agenzie-di-viaggio" },
+  { name: "Palestre & fitness", slug: "palestre-fitness" },
+  { name: "Studi dentistici & medici", slug: "studi-dentistici-medici" },
+  { name: "Ristoranti & food", slug: "ristoranti-food" },
+  { name: "E-commerce & negozi locali", slug: "ecommerce-negozi-locali" },
+  { name: "Automotive & concessionari", slug: "automotive-concessionari" },
+  { name: "Estetica & beauty", slug: "estetica-beauty" },
+  { name: "Edilizia & ristrutturazioni", slug: "edilizia-ristrutturazioni" },
+  { name: "Wedding & eventi", slug: "wedding-eventi" },
 ];
 
 export type ProcessStep = { number: string; title: string; description: string };
@@ -97,17 +99,16 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
   {
     title: "Settori",
     links: [
-      { label: "Immobiliari", href: "/#settori" },
-      { label: "Commercialisti", href: "/#settori" },
-      { label: "Legali", href: "/#settori" },
-      { label: "E-commerce", href: "/#settori" },
+      { label: "Immobiliari", href: "/automazioni-per-agenzie-immobiliari" },
+      { label: "Commercialisti", href: "/automazioni-per-studi-commercialisti" },
+      { label: "Legali", href: "/automazioni-per-studi-legali" },
+      { label: "E-commerce", href: "/automazioni-per-ecommerce-negozi-locali" },
     ],
   },
   {
     title: "Azienda",
     links: [
       { label: "Chi siamo", href: "/chi-siamo" },
-      { label: "Risorse", href: "/risorse" },
       { label: "Contatti", href: "/contatti" },
     ],
   },

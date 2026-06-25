@@ -71,7 +71,11 @@ export default function HomePage() {
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           {SECTORS.map((s) => (
-            <SectorChip key={s} label={s} />
+            <SectorChip
+              key={s.slug}
+              label={s.name}
+              href={`/automazioni-per-${s.slug}`}
+            />
           ))}
         </div>
       </Section>

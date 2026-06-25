@@ -31,6 +31,13 @@ Convenzione: voce più recente **in cima**, sotto `## Cosa è stato fatto`, come
   (Resend-se-configurato / fallback graceful). Rimossa la vecchia landing Prospector (`src/app/page.tsx`).
   H1 sobrio "Tecnologia e marketing, progettati con metodo.", stat band neutre, manifesto "Marketing
   professionale, non solo per le grandi aziende.". Build verde senza segreti; verifica visiva locale ok.
+- **Sito vetrina — template soluzione + Chi siamo (codice)**: aggiunto il template ricorrente
+  **`/{servizio}-per-{settore}`** (route dinamica `src/app/(site)/[slug]`, `dynamicParams = false` +
+  `generateStaticParams` dalla matrice) — prima ondata **Automazioni × 12 settori** = 12 pagine SSG, con
+  hero, sfide del settore, soluzioni, processo, "perché", CTA (modellato sulle vecchie `automazioni-per-*`,
+  nuovo stile sobrio). Aggiunta pagina **`/chi-siamo`**. Chip settori della Home ora linkati alle pagine
+  soluzione; nav/footer ripuliti (Contatti al posto di Risorse, nessun link morto). Contenuti
+  `src/content/solutions.ts` (sfide per settore + soluzioni Automazioni). Build verde: 22 pagine static.
 
 ### Sessione 2026-06-24 — Template `.env` a due livelli + guida setup locale (A2)
 - **Task A2** (handoff → sessione locale, lato Claude): preparato il setup env per far girare l'app
