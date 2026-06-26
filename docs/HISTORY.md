@@ -31,6 +31,11 @@ Convenzione: voce più recente **in cima**, sotto `## Cosa è stato fatto`, come
 - **Code — Soluzioni SEO-only**: le 48 pagine servizio×settore restano **indicizzabili** e ora sono in
   `sitemap.xml` + sitemap HTML, ma fuori dalla navigazione (il mega menu mostra gli hub, non le 48). I link
   contestuali hub→soluzione restano (internal linking SEO-positivo).
+- **Mega menu anche su mobile + archivio Figma**: il drawer mobile (`mobile-menu.tsx`) ora ha **Servizi** e
+  **Settori** come **sezioni espandibili** (accordion, single-open, lista scrollabile) con le sotto-voci
+  (4 servizi / 12 settori + "Tutti…"); Chi siamo/Contatti restano link. `navbar.tsx` passa i dati anche al
+  MobileMenu. La vecchia pagina Figma *Brand Board* è stata **archiviata** (rinominata + spostata in fondo),
+  superata dal nuovo Brand Book.
 - **Verifica**: `typecheck + lint + build` verdi senza segreti (Node 22+) → **78/78** pagine (`/sitemap` +
   `/sitemap.xml`). Preview live: mega menu Servizi/Settori, `/sitemap` (48 link verificati nel DOM),
   `/sitemap.xml` (200, application/xml, 70 URL). Zero errori console.

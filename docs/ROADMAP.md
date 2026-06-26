@@ -33,6 +33,7 @@ Legenda stato: ✅ fatto · 🔜 prossimo · ⏸️ in pausa / posticipato · �
 
 | data | aspetto | voce | PR/commit |
 |------|---------|------|-----------|
+| 2026-06-26 | G Sito vetrina | Mega menu anche su mobile (accordion espandibile) + archivio Figma Brand Board | _branch sessione_ |
 | 2026-06-25 | G Sito vetrina | Mega menu (navbar) + /sitemap + /sitemap.xml (SEO, 48 soluzioni SEO-only) + brand book Figma 11 sez. + pittogramma N | _branch sessione_ |
 | 2026-06-25 | G Sito vetrina | Hub Servizio/Settore + indici + matrice 4×12 (48 SSG) + mesh/breadcrumb + menu mobile; Figma 2 template | _branch sessione_ |
 | 2026-06-25 | G Sito vetrina | Template soluzione servizio×settore (Automazioni × 12, SSG) + Chi siamo + nav/footer | _branch sessione_ |

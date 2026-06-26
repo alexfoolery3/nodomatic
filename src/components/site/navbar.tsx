@@ -29,7 +29,12 @@ export function Navbar() {
           links={links}
           cta={PRIMARY_CTA}
         />
-        <MobileMenu />
+        <MobileMenu
+          services={services}
+          sectors={sectors}
+          links={links}
+          cta={PRIMARY_CTA}
+        />
       </div>
     </header>
   );
