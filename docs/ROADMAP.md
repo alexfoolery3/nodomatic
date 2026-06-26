@@ -19,6 +19,9 @@ Legenda stato: ✅ fatto · 🔜 prossimo · ⏸️ in pausa / posticipato · �
 - ✅ **Soluzione servizio×settore** (`/{servizio}-per-{settore}`): Automazioni × 12 settori (SSG) + **Chi siamo**.
 - ✅ **Hub Servizio/Settore** (`/servizi/[servizio]`, `/settori/[settore]`) + indici + breadcrumb; matrice estesa a
   **4 servizi × 12 settori = 48 soluzioni**; mesh IA Home→hub→soluzione; **menu mobile** + polish responsive. Figma: 2 template hub.
+- ✅ **Mega menu** Servizi/Settori nella navbar (dropdown, no icone) + pagina **/sitemap** e **/sitemap.xml**
+  (48 soluzioni = pagine **SEO-only**, indicizzabili e in sitemap, fuori dal nav). Figma: mega menu, footer con
+  settori, sitemap, **brand book 11 sezioni**; pittogramma = **N a nodi**.
 
 **Prossimo (sito vetrina / go-live):**
 - ⏸️ **Tema chiaro** del sito (rinviato dall'utente; base resta dark-only).
@@ -30,6 +33,7 @@ Legenda stato: ✅ fatto · 🔜 prossimo · ⏸️ in pausa / posticipato · �
 
 | data | aspetto | voce | PR/commit |
 |------|---------|------|-----------|
+| 2026-06-25 | G Sito vetrina | Mega menu (navbar) + /sitemap + /sitemap.xml (SEO, 48 soluzioni SEO-only) + brand book Figma 11 sez. + pittogramma N | _branch sessione_ |
 | 2026-06-25 | G Sito vetrina | Hub Servizio/Settore + indici + matrice 4×12 (48 SSG) + mesh/breadcrumb + menu mobile; Figma 2 template | _branch sessione_ |
 | 2026-06-25 | G Sito vetrina | Template soluzione servizio×settore (Automazioni × 12, SSG) + Chi siamo + nav/footer | _branch sessione_ |
 | 2026-06-25 | G Sito vetrina | Home + /contatti agency in codice (route group `(site)`, tema `.site`, Geist) | _branch sessione_ |

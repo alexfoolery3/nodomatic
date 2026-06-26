@@ -10,6 +10,31 @@ Convenzione: voce più recente **in cima**, sotto `## Cosa è stato fatto`, come
 
 ## Cosa è stato fatto
 
+### Sessione 2026-06-25 — Mega menu + sitemap (SEO) nel sito, brand book Figma, pittogramma N
+- **Decisione brand**: il pittogramma scelto è la **N a nodi** (concept A). Aggiornati su Figma i loghi
+  ed emblema/favicon del brand book con la N reale (stesso path SVG di `logo-mark.tsx`, via
+  `createNodeFromSvg`). In codice il logo era già la N.
+- **Figma** (file *Nodomatic — Brand System*, pagina "Pages"): creati **mega menu** Servizi (`42:2`) e
+  Settori (`42:48`), **footer aggiornato** con tutti i 12 settori (`33:2`), pagina **Sitemap** (`35:2`),
+  e nuovo **Brand Book** in 11 sezioni (pagina `36:2`: logo, emblema&favicon, regole, palette, accessibilità,
+  tipografia, layout/griglia, iconografia, fotografia, tone of voice, componenti UI). I mega menu sono stati
+  **ricostruiti senza icone prima del testo** e con la N reale (fix del problema sul layer `mega-panel`).
+- **Code — Mega menu nel sito**: nuovo `src/components/site/mega-menu.tsx` (client): la navbar desktop ha i
+  dropdown **Servizi** e **Settori** (pannello full-width sotto la navbar, **niente icone prima del testo**;
+  hover + click + Esc + click-esterno + chiusura al cambio rotta). Il pannello è `absolute inset-x-0 top-full`:
+  la navbar ha `backdrop-blur` che fa da containing block, quindi copre tutta la larghezza. `navbar.tsx`
+  (server) passa i dati (`serviceCards()`, `SECTORS`) al MegaMenu; il MobileMenu resta invariato.
+- **Code — Sitemap (SEO)**: nuova pagina HTML **`/sitemap`** (`src/app/(site)/sitemap/page.tsx`): pagine
+  principali, 4 servizi, 12 settori, e le **48 soluzioni** raggruppate per servizio (link reali). Nuovo
+  **`src/app/sitemap.ts`** → genera **`/sitemap.xml`** (70 URL: pagine + hub + 48 soluzioni; base da
+  `NEXT_PUBLIC_APP_URL` con fallback). Aggiunto link "Mappa del sito" nel footer (`FOOTER_COLUMNS`).
+- **Code — Soluzioni SEO-only**: le 48 pagine servizio×settore restano **indicizzabili** e ora sono in
+  `sitemap.xml` + sitemap HTML, ma fuori dalla navigazione (il mega menu mostra gli hub, non le 48). I link
+  contestuali hub→soluzione restano (internal linking SEO-positivo).
+- **Verifica**: `typecheck + lint + build` verdi senza segreti (Node 22+) → **78/78** pagine (`/sitemap` +
+  `/sitemap.xml`). Preview live: mega menu Servizi/Settori, `/sitemap` (48 link verificati nel DOM),
+  `/sitemap.xml` (200, application/xml, 70 URL). Zero errori console.
+
 ### Sessione 2026-06-25 — Sito vetrina: hub Servizio/Settore, matrice 4×12, rifinitura mobile (Figma + ultracode)
 - **Figma (Fase A)**: disegnati nel file *Nodomatic — Brand System* (pagina "Pages", accanto al mockup Home)
   i due template mancanti **Hub Servizio** (`22:2`) e **Hub Settore** (`24:2`), desktop tema dark, riusando i

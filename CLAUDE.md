@@ -88,7 +88,10 @@ Verifica sempre prima di committare: `pnpm typecheck && pnpm lint && pnpm build`
   (hub settore), **`/[slug]`** = soluzione servizio×settore (matrice 4 servizi × 12 settori = **48 pagine SSG**
   da `allSolutions()`). Mesh: Home→hub→soluzione + `breadcrumb.tsx` + cross-link. Menu mobile
   `mobile-menu.tsx`: drawer in **portale su `document.body`** (la navbar ha `backdrop-blur` → containing
-  block per i `fixed`, che schiaccerebbe `inset-0`). Dashboard: `app/(dashboard)`.
+  block per i `fixed`, che schiaccerebbe `inset-0`). Navbar desktop: **mega menu** `mega-menu.tsx` (dropdown
+  Servizi/Settori, pannello `absolute inset-x-0 top-full`, **no icone prima del testo**). **Sitemap**: pagina
+  HTML `/sitemap` + `src/app/sitemap.ts` → `/sitemap.xml` (include le 48 soluzioni). Le 48 soluzioni sono
+  **SEO-only** (indicizzabili, in sitemap, fuori dal nav). Dashboard: `app/(dashboard)`.
 
 ## Decisioni prese
 

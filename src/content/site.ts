@@ -82,6 +82,7 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
     links: [
       { label: "Chi siamo", href: "/chi-siamo" },
       { label: "Contatti", href: "/contatti" },
+      { label: "Mappa del sito", href: "/sitemap" },
     ],
   },
 ];
