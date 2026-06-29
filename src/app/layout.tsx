@@ -3,7 +3,7 @@ import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://nodomatic.vercel.app"),
+  metadataBase: new URL("https://www.nodomatic.com"),
   title: {
     default: "Nodomatic · Agency di automazione, marketing e AI",
     template: "%s · Nodomatic",
