@@ -19,7 +19,8 @@ import {
 import { serviceCards } from "@/content/solutions";
 
 export const metadata: Metadata = {
-  title: "Nodomatic · Agency di automazione, marketing e AI",
+  // `absolute` evita che il template del root layout aggiunga " · Nodomatic" (niente doppione).
+  title: { absolute: "Nodomatic · Agency di automazione, marketing e AI" },
   description: HERO.subtitle,
   openGraph: {
     title: "Nodomatic · Agency di automazione, marketing e AI",

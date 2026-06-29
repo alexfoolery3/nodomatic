@@ -8,7 +8,7 @@ import { allServices, allSolutions } from "@/content/solutions";
  * presenti nella navigazione). Esclude la dashboard interna.
  */
 const BASE = (
-  process.env.NEXT_PUBLIC_APP_URL ?? "https://nodomatic.vercel.app"
+  process.env.NEXT_PUBLIC_APP_URL ?? "https://www.nodomatic.com"
 ).replace(/\/$/, "");
 
 export default function sitemap(): MetadataRoute.Sitemap {
