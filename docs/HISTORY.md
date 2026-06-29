@@ -10,6 +10,23 @@ Convenzione: voce più recente **in cima**, sotto `## Cosa è stato fatto`, come
 
 ## Cosa è stato fatto
 
+### Sessione 2026-06-29 — Go-live dominio nodomatic.com + setup email/SEO
+- **Dominio LIVE**: `nodomatic.com` puntato su **Vercel** (nameserver Vercel, DNS gestito da Vercel; apex→www 308,
+  HTTPS con certificato auto). La **vetrina è pubblica e online**. Diagnosi via `dig` (il dominio era ancora sui
+  nameserver di parcheggio Hostinger `dns-parking.com`, poi propagato a `ns1/ns2.vercel-dns.com`). Chiarita la
+  differenza tra **transfer del registrar** (lento, ciò che l'utente ha pagato) e **far puntare il sito** (cambio NS).
+- **SEO/metadata** (PR #7): `metadataBase` → `https://www.nodomatic.com`, `title` home in `{ absolute }` (niente
+  doppione "· Nodomatic"), `sitemap.ts` base → dominio live. **Google Search Console**: aggiunto record TXT
+  `google-site-verification` sull'apex via **Vercel CLI** (`vercel dns add`), per la proprietà **Dominio** `nodomatic.com`
+  (non www); propagato e verificato su NS Vercel + resolver pubblici.
+- **Env Vercel prod**: `NEXT_PUBLIC_APP_URL=https://www.nodomatic.com`, `PAGESPEED_API_KEY` (sensitive); Anthropic+Apify già.
+- **Resend**: piano **Pro** acquistato, account connesso. Dominio mittente outreach **`mail.nodomatic.com`** in setup
+  (i record DNS unici di Resend, DKIM inclusa, vanno aggiunti sul DNS Vercel: l'utente li genera con "Add Domain", poi
+  si inseriscono via `vercel dns add`). **Decisione**: un solo team **RT Studio** su Pro + **un dominio per progetto**
+  (i team aggiuntivi costano ~$20/mese; reputazione isolata dai domini distinti).
+- **Nota git**: `overview.md` (commit locale dell'utente, mai pushato) è confluito nello squash della PR #7; contenuto
+  integro su `main` (`153bd08`). Il `main` locale resta da risincronizzare (`git fetch && git reset --hard origin/main`).
+
 ### Sessione 2026-06-25 — Mega menu + sitemap (SEO) nel sito, brand book Figma, pittogramma N
 - **Decisione brand**: il pittogramma scelto è la **N a nodi** (concept A). Aggiornati su Figma i loghi
   ed emblema/favicon del brand book con la N reale (stesso path SVG di `logo-mark.tsx`, via
