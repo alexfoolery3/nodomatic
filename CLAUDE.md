@@ -15,15 +15,23 @@ Nodomatic = ecosistema di automazioni **interne** di RT Studio. Primo modulo: **
 
 ## Promemoria critici
 
-**Stato live** *(2026-06-25)*: DB **Neon** collegato via integrazione Vercel; migrazioni `0000`–`0002`
-**applicate**; **admin seedato**; env auth su Vercel prod → **login admin live** su `nodomatic.vercel.app`.
+**Stato live** *(2026-06-29)*: DB **Neon** collegato via integrazione Vercel; migrazioni `0000`–`0002`
+**applicate**; **admin seedato**; env auth su Vercel prod → **login admin live**.
 Progetto Vercel `rt-studio/nodomatic` creato, repo GitHub collegato (**push = deploy**, `main` = prod).
+**Dominio `nodomatic.com` LIVE su Vercel** (DNS gestito da Vercel, nameserver Vercel, apex→www 308, HTTPS) →
+**vetrina pubblica online**; Google **Search Console verificato** (TXT `google-site-verification` sull'apex).
+Env Vercel prod aggiunte: `NEXT_PUBLIC_APP_URL=https://www.nodomatic.com`, `PAGESPEED_API_KEY` (sensitive),
+oltre ad Anthropic/Apify. **Resend**: piano **Pro** acquistato e account connesso; dominio mittente outreach
+`mail.nodomatic.com` in setup (record DNS da aggiungere su Vercel DNS).
 *Nota Node 20*: `pnpm db:migrate` (drizzle-kit) usa il driver **websocket** che su Node 20 fallisce →
 applicare le migrazioni col **migrator HTTP** (`drizzle-orm/neon-http/migrator`) o usare Node 22.
 
 **Azioni manuali ancora in sospeso:**
-- Chiavi funnel su Vercel (Apify, PageSpeed, Anthropic, Resend+webhook, R2, Inngest sync) — le inserisce l'utente.
-- Dominio `nodomatic.com` (vetrina) + sottodominio `app.nodomatic.com` (app interna).
+- **Email Resend `mail.nodomatic.com`**: aggiungere i record DNS generati da Resend (SPF/DKIM/MX/DMARC) sul DNS
+  Vercel + impostare `RESEND_API_KEY` e `OUTREACH_FROM_EMAIL` (=…@mail.nodomatic.com).
+- Chiavi funnel ancora mancanti su Vercel: **R2**, **Resend webhook** (`RESEND_WEBHOOK_SECRET`), **Inngest sync**
+  (`INNGEST_EVENT_KEY`/`INNGEST_SIGNING_KEY`). *(Fatte: Anthropic, Apify, PageSpeed, `NEXT_PUBLIC_APP_URL`.)*
+- Sottodominio `app.nodomatic.com` (app interna). *(Dominio vetrina `nodomatic.com` = **LIVE** ✅)*
 
 **Checklist go-live `.com`** (dettaglio in `docs/ROADMAP.md` → area H): DB Neon → env var su Vercel
 (`DATABASE_URL`, `BETTER_AUTH_SECRET/URL`, `NEXT_PUBLIC_APP_URL`, `IP_HASH_SALT`, poi le chiavi in
@@ -103,6 +111,9 @@ Verifica sempre prima di committare: `pnpm typecheck && pnpm lint && pnpm build`
 - **Slug servizi (URL soluzioni): brevi** — `automazioni`, `ads`, `siti`, `social` (es. `/ads-per-ristoranti-food`).
 - **Tema chiaro del sito: rinviato** (scelta utente). Base dark-only; quando servirà → token semantici + `@theme inline` override.
 - Dominio: **nodomatic.com**. Sottodomini per moduli/funzioni in seguito.
+- **Email outreach (Resend)**: un solo team **RT Studio** su piano **Pro**, **un dominio per progetto** (NON un team
+  per progetto: i team aggiuntivi costano ~$20/mese ciascuno; la reputazione si isola con domini diversi). Outreach
+  Nodomatic da sottodominio dedicato **`mail.nodomatic.com`** (protegge il dominio principale); risposte via forwarding.
 - Next.js **15** (pinned), pnpm, Node 22.
 
 ## Decisioni aperte (PRD §13)

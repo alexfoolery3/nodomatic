@@ -33,6 +33,8 @@ Legenda stato: ✅ fatto · 🔜 prossimo · ⏸️ in pausa / posticipato · �
 
 | data | aspetto | voce | PR/commit |
 |------|---------|------|-----------|
+| 2026-06-29 | H Go-live | Dominio nodomatic.com **LIVE** su Vercel + Search Console verificato + env (NEXT_PUBLIC_APP_URL/PageSpeed) + Resend Pro connesso | _operativo_ |
+| 2026-06-29 | G Sito vetrina | Titolo home senza doppione + metadata canonical su nodomatic.com | (#7) |
 | 2026-06-26 | G Sito vetrina | Mega menu anche su mobile (accordion espandibile) + archivio Figma Brand Board | _branch sessione_ |
 | 2026-06-25 | G Sito vetrina | Mega menu (navbar) + /sitemap + /sitemap.xml (SEO, 48 soluzioni SEO-only) + brand book Figma 11 sez. + pittogramma N | _branch sessione_ |
 | 2026-06-25 | G Sito vetrina | Hub Servizio/Settore + indici + matrice 4×12 (48 SSG) + mesh/breadcrumb + menu mobile; Figma 2 template | _branch sessione_ |
@@ -88,10 +90,11 @@ menu mobile (responsive) ✅. Tema chiaro ⏸️ (rinviato). **Dashboard** (shad
 rifinitura visuale e coerenza ancora da fare.
 
 ### H — Go-live (.com / Vercel / Neon) 🔜
-Codice builda verde senza segreti; `engines.node = 22.x`. **In corso:** deploy su Vercel
-(team `rt-studio`) — vedi "Azioni manuali in sospeso" in CLAUDE.md. **Da fare:** collegare
-DATABASE_URL Neon, env var, `pnpm db:migrate`, seed admin, Inngest sync, Resend webhook,
-dominio `nodomatic.com`. Setup env locale a due livelli: guida passo-passo in [`SETUP-LOCAL.md`](SETUP-LOCAL.md).
+Codice builda verde senza segreti; `engines.node = 22.x`. **Fatto:** login admin live; **dominio `nodomatic.com`
+LIVE su Vercel** (DNS Vercel, apex→www, HTTPS, **Search Console verificato**); env Vercel (`NEXT_PUBLIC_APP_URL`,
+`PAGESPEED_API_KEY`, Anthropic, Apify); **Resend piano Pro** connesso. **Da fare:** DNS email `mail.nodomatic.com`
+(record Resend→Vercel DNS) + `RESEND_API_KEY`/`OUTREACH_FROM_EMAIL`, R2, Resend webhook, Inngest sync (prod),
+sottodominio `app.nodomatic.com`. Setup env locale a due livelli: guida in [`SETUP-LOCAL.md`](SETUP-LOCAL.md).
 
 ### I — Wow / AI avanzata ⏸️
 Moduli futuri posticipati dall'utente: `geo` (AI visibility tracker) e `digital-pr` (earned
