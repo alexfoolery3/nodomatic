@@ -62,6 +62,9 @@ export async function sendInternalEmail(subject: string, body: string): Promise<
 export async function sendOutreachEmail(input: SendOutreachInput): Promise<SendOutreachResult> {
   const resend = new Resend(requireEnv("RESEND_API_KEY"));
   const from = requireEnv("OUTREACH_FROM_EMAIL");
+  // Le risposte all'outreach vanno a una casella che leggiamo davvero (OUTREACH_REPLY_TO),
+  // visto che il dominio mittente serve solo per inviare e non riceve. Opzionale.
+  const replyTo = process.env.OUTREACH_REPLY_TO;
 
   const { data, error } = await resend.emails.send({
     from,
@@ -69,6 +72,7 @@ export async function sendOutreachEmail(input: SendOutreachInput): Promise<SendO
     subject: input.subject,
     html: renderHtml(input.body, input.landingUrl),
     text: `${input.body}\n\n${input.landingUrl}\n\nNodomatic · RT Studio`,
+    ...(replyTo ? { replyTo } : {}),
   });
 
   if (error || !data) {
