@@ -41,6 +41,9 @@ Convenzione: voce più recente **in cima**, sotto `## Cosa è stato fatto`, come
   (`{"modified":true}`). Aggiunto il gotcha in CLAUDE.md + raccomandata l'integrazione Inngest↔Vercel per l'auto-sync.
   Aggiunto **indicatore di lavorazione + auto-refresh** sulla pagina campagna (`campaign-progress.tsx`): mentre lo stato
   è `scraping`/`auditing` ricarica ogni 4s così i prospect/score compaiono man mano (tetto 3 min anti-loop).
+- **Pulsante "Riavvia scraping"** (`restart-scrape-button.tsx` + `restartScrapeAction`): ri-invia l'evento Inngest per
+  una campagna bloccata. Mostrato solo a **0 prospect** (lo scraping non deduplica → niente duplicati). Risolve i casi
+  come le campagne ferme pre-sync senza doverle ricreare.
 
 ### Sessione 2026-06-29 — Go-live dominio nodomatic.com + setup email/SEO
 - **Dominio LIVE**: `nodomatic.com` puntato su **Vercel** (nameserver Vercel, DNS gestito da Vercel; apex→www 308,
