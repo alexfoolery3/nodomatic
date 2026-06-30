@@ -17,6 +17,14 @@ import { env } from "@/lib/env";
 const baseOptions = {
   baseURL: env.betterAuthUrl,
   secret: env.betterAuthSecret ?? "build-time-placeholder-secret-change-in-production",
+  // Origini ammesse per il login (PRD §2). Oltre al baseURL, accetta esplicitamente
+  // apex e www di produzione: l'apex fa 308 → www, ma teniamo entrambi per robustezza
+  // contro mismatch di Origin ("Invalid origin").
+  trustedOrigins: [
+    "https://www.nodomatic.com",
+    "https://nodomatic.com",
+    "http://localhost:3000",
+  ],
   database: drizzleAdapter(db, {
     provider: "pg" as const,
     schema: {
