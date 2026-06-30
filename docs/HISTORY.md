@@ -36,6 +36,11 @@ Convenzione: voce più recente **in cima**, sotto `## Cosa è stato fatto`, come
   - **Fase 2 (roadmap, non costruita)**: visione **radar multi-canale** (sito/ads/social/GBP/processi → servizio da
     vendere); 15 funzioni per uso giornaliero (vista "Oggi", scorecard, score multi-canale, pitch AI per-servizio,
     Meta Ad Library, scoperta social dal sito, ecc.). Ricerca su 13+ tool competitor. Dettaglio nel file di piano.
+- **Post-merge — scraping non partiva**: campagne ferme in `scraping` con 0 prospect. Causa: **app Inngest mai
+  sincronizzata** (gli eventi venivano accettati ma nessuna funzione girava). Risolto con `PUT /api/inngest`
+  (`{"modified":true}`). Aggiunto il gotcha in CLAUDE.md + raccomandata l'integrazione Inngest↔Vercel per l'auto-sync.
+  Aggiunto **indicatore di lavorazione + auto-refresh** sulla pagina campagna (`campaign-progress.tsx`): mentre lo stato
+  è `scraping`/`auditing` ricarica ogni 4s così i prospect/score compaiono man mano (tetto 3 min anti-loop).
 
 ### Sessione 2026-06-29 — Go-live dominio nodomatic.com + setup email/SEO
 - **Dominio LIVE**: `nodomatic.com` puntato su **Vercel** (nameserver Vercel, DNS gestito da Vercel; apex→www 308,
