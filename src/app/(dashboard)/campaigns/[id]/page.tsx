@@ -21,6 +21,7 @@ import { OutreachButton } from "./outreach-button";
 import { ManualProspectForm } from "./manual-prospect-form";
 import { CampaignActions } from "../campaign-actions";
 import { CampaignProgress } from "./campaign-progress";
+import { RestartScrapeButton } from "./restart-scrape-button";
 
 export const dynamic = "force-dynamic";
 
@@ -85,6 +86,7 @@ export default async function CampaignDetailPage({
           </p>
         </div>
         <div className="flex items-center gap-3">
+          {isAdmin && analytics.total === 0 && <RestartScrapeButton id={id} />}
           {isAdmin && <CampaignActions id={id} status={campaign.status} />}
           <OutreachButton campaignId={id} />
         </div>

@@ -118,3 +118,30 @@ export async function deleteCampaignAction(id: string): Promise<CampaignActionRe
   revalidatePath("/campaigns");
   redirect("/campaigns");
 }
+
+/**
+ * Ri-invia l'evento di scraping per una campagna (utile se è rimasta bloccata, es.
+ * evento perso prima del sync Inngest). Solo admin. Pensato per campagne a 0 prospect:
+ * `insertScrapedProspects` non deduplica, quindi non va usato su campagne già popolate
+ * (la UI mostra il pulsante solo quando i prospect sono 0).
+ */
+export async function restartScrapeAction(id: string): Promise<CampaignActionResult> {
+  const denied = await ensureAdmin();
+  if (denied) return denied;
+  if (!campaignIdSchema.safeParse(id).success) return { error: "ID non valido." };
+
+  await setCampaignStatus(id, "scraping");
+  try {
+    await inngest.send({
+      name: "prospector/campaign.scrape.requested",
+      data: { campaignId: id },
+    });
+  } catch (err) {
+    console.error("[campaigns] restart scrape: invio evento fallito:", err);
+    await setCampaignStatus(id, "draft");
+    revalidatePath(`/campaigns/${id}`);
+    return { error: "Riavvio fallito: Inngest non raggiungibile o non configurato." };
+  }
+  revalidatePath(`/campaigns/${id}`);
+  return { ok: true };
+}
