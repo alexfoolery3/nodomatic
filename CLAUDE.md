@@ -15,10 +15,14 @@ Nodomatic = ecosistema di automazioni **interne** di RT Studio. Primo modulo: **
 
 ## Promemoria critici
 
-**Stato live** *(2026-06-30)*: DB **Neon** collegato via integrazione Vercel; migrazioni `0000`–`0002`
-**applicate** (`0003` scrape_limit generata, da applicare); **admin seedato**; env auth prod sistemate
-(`BETTER_AUTH_URL`=www + `SECRET` sensitive + `trustedOrigins`) → **login admin live**; **Inngest** keys
-inserite → **scraping campagne operativo** (Apify ok).
+**Stato live** *(2026-06-30)*: DB **Neon** collegato via integrazione Vercel; migrazioni `0000`–`0003`
+**applicate**; **admin seedato**; env auth prod sistemate (`BETTER_AUTH_URL`=www + `SECRET` sensitive +
+`trustedOrigins`) → **login admin live**; **Inngest** keys inserite **e app sincronizzata** → scraping operativo (Apify ok).
+
+**⚠️ Gotcha Inngest sync**: gli eventi `inngest.send` vengono accettati anche se l'app **non è sincronizzata**, ma
+**nessuna funzione gira** (campagne ferme in `scraping`, 0 prospect). Dopo ogni deploy che tocca le function bisogna
+**ri-sincronizzare**: `curl -X PUT https://www.nodomatic.com/api/inngest` (deve dare `{"modified":true}`) **oppure**
+collegare l'**integrazione Inngest↔Vercel** (auto-sync on deploy, soluzione definitiva consigliata).
 Progetto Vercel `rt-studio/nodomatic` creato, repo GitHub collegato (**push = deploy**, `main` = prod).
 **Dominio `nodomatic.com` LIVE su Vercel** (DNS gestito da Vercel, nameserver Vercel, apex→www 308, HTTPS) →
 **vetrina pubblica online**; Google **Search Console verificato** (TXT `google-site-verification` sull'apex).
@@ -29,8 +33,8 @@ oltre ad Anthropic/Apify. **Resend**: piano **Pro** acquistato e account conness
 applicare le migrazioni col **migrator HTTP** (`drizzle-orm/neon-http/migrator`) o usare Node 22.
 
 **Azioni manuali ancora in sospeso:**
-- **Migrazione `0003_uneven_mad_thinker.sql`** (colonna `campaigns.scrape_limit`): applicare a Neon col migrator HTTP
-  (gotcha Node 20) o Node 22. **Va applicata prima di mergiare la Fase 1** (il codice legge la colonna). _(2026-06-30)_
+- **Inngest auto-sync**: oggi dopo ogni deploy serve `curl -X PUT .../api/inngest` (vedi gotcha sopra). Collegare
+  l'**integrazione Inngest↔Vercel** per renderlo automatico → toglie un passo manuale fragile. _(2026-06-30)_
 - **Email Resend `mail.nodomatic.com`**: aggiungere i record DNS generati da Resend (SPF/DKIM/MX/DMARC) sul DNS
   Vercel + impostare `RESEND_API_KEY` e `OUTREACH_FROM_EMAIL` (=…@mail.nodomatic.com).
 - Chiavi funnel ancora mancanti su Vercel: **R2**, **Resend webhook** (`RESEND_WEBHOOK_SECRET`).

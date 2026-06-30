@@ -20,6 +20,7 @@ import { StatusSelect } from "@/components/status-select";
 import { OutreachButton } from "./outreach-button";
 import { ManualProspectForm } from "./manual-prospect-form";
 import { CampaignActions } from "../campaign-actions";
+import { CampaignProgress } from "./campaign-progress";
 
 export const dynamic = "force-dynamic";
 
@@ -88,6 +89,8 @@ export default async function CampaignDetailPage({
           <OutreachButton campaignId={id} />
         </div>
       </div>
+
+      <CampaignProgress status={campaign.status} />
 
       {/* Analytics aggregati (PRD §10 Fase 4) */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
