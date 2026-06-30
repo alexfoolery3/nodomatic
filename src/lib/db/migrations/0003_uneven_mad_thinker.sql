@@ -1,0 +1,1 @@
+ALTER TABLE "campaigns" ADD COLUMN "scrape_limit" integer DEFAULT 50 NOT NULL;

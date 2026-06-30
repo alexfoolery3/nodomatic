@@ -164,6 +164,8 @@ export const campaigns = pgTable("campaigns", {
   name: text("name").notNull(),
   city: text("city").notNull(),
   category: text("category").notNull(),
+  // Quante attività scrapare da Google Maps per questa campagna (Fase 1 — 1A).
+  scrapeLimit: integer("scrape_limit").notNull().default(50),
   status: campaignStatusEnum("status").notNull().default("draft"),
   createdBy: text("created_by").references(() => user.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
