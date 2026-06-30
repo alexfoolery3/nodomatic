@@ -15,8 +15,10 @@ Nodomatic = ecosistema di automazioni **interne** di RT Studio. Primo modulo: **
 
 ## Promemoria critici
 
-**Stato live** *(2026-06-29)*: DB **Neon** collegato via integrazione Vercel; migrazioni `0000`–`0002`
-**applicate**; **admin seedato**; env auth su Vercel prod → **login admin live**.
+**Stato live** *(2026-06-30)*: DB **Neon** collegato via integrazione Vercel; migrazioni `0000`–`0002`
+**applicate** (`0003` scrape_limit generata, da applicare); **admin seedato**; env auth prod sistemate
+(`BETTER_AUTH_URL`=www + `SECRET` sensitive + `trustedOrigins`) → **login admin live**; **Inngest** keys
+inserite → **scraping campagne operativo** (Apify ok).
 Progetto Vercel `rt-studio/nodomatic` creato, repo GitHub collegato (**push = deploy**, `main` = prod).
 **Dominio `nodomatic.com` LIVE su Vercel** (DNS gestito da Vercel, nameserver Vercel, apex→www 308, HTTPS) →
 **vetrina pubblica online**; Google **Search Console verificato** (TXT `google-site-verification` sull'apex).
@@ -27,11 +29,14 @@ oltre ad Anthropic/Apify. **Resend**: piano **Pro** acquistato e account conness
 applicare le migrazioni col **migrator HTTP** (`drizzle-orm/neon-http/migrator`) o usare Node 22.
 
 **Azioni manuali ancora in sospeso:**
+- **Migrazione `0003_uneven_mad_thinker.sql`** (colonna `campaigns.scrape_limit`): applicare a Neon col migrator HTTP
+  (gotcha Node 20) o Node 22. **Va applicata prima di mergiare la Fase 1** (il codice legge la colonna). _(2026-06-30)_
 - **Email Resend `mail.nodomatic.com`**: aggiungere i record DNS generati da Resend (SPF/DKIM/MX/DMARC) sul DNS
   Vercel + impostare `RESEND_API_KEY` e `OUTREACH_FROM_EMAIL` (=…@mail.nodomatic.com).
-- Chiavi funnel ancora mancanti su Vercel: **R2**, **Resend webhook** (`RESEND_WEBHOOK_SECRET`), **Inngest sync**
-  (`INNGEST_EVENT_KEY`/`INNGEST_SIGNING_KEY`). *(Fatte: Anthropic, Apify, PageSpeed, `NEXT_PUBLIC_APP_URL`.)*
-- Sottodominio `app.nodomatic.com` (app interna). *(Dominio vetrina `nodomatic.com` = **LIVE** ✅)*
+- Chiavi funnel ancora mancanti su Vercel: **R2**, **Resend webhook** (`RESEND_WEBHOOK_SECRET`).
+  *(Fatte: Anthropic, Apify, PageSpeed, `NEXT_PUBLIC_APP_URL`, **Inngest** `EVENT_KEY`/`SIGNING_KEY`, **BETTER_AUTH_URL/SECRET**.)*
+- Sottodominio `app.nodomatic.com` (app interna; oggi la dashboard è su `www.nodomatic.com/dashboard`).
+  *(Dominio vetrina `nodomatic.com` = **LIVE** ✅)*
 
 **Checklist go-live `.com`** (dettaglio in `docs/ROADMAP.md` → area H): DB Neon → env var su Vercel
 (`DATABASE_URL`, `BETTER_AUTH_SECRET/URL`, `NEXT_PUBLIC_APP_URL`, `IP_HASH_SALT`, poi le chiavi in

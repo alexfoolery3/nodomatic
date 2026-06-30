@@ -19,6 +19,7 @@ import {
 import { StatusSelect } from "@/components/status-select";
 import { OutreachButton } from "./outreach-button";
 import { ManualProspectForm } from "./manual-prospect-form";
+import { CampaignActions } from "../campaign-actions";
 
 export const dynamic = "force-dynamic";
 
@@ -38,7 +39,8 @@ export default async function CampaignDetailPage({
 }) {
   if (!isDbConfigured) return null;
 
-  await requireUser();
+  const user = await requireUser();
+  const isAdmin = user.role === "admin";
   const { id } = await params;
   const sp = await searchParams;
 
@@ -77,10 +79,14 @@ export default async function CampaignDetailPage({
           </Link>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight">{campaign.name}</h1>
           <p className="mt-1 text-sm text-neutral-500">
-            {campaign.category} · {campaign.city} · stato {campaign.status}
+            {campaign.category} · {campaign.city} · stato {campaign.status} · max{" "}
+            {campaign.scrapeLimit} attività
           </p>
         </div>
-        <OutreachButton campaignId={id} />
+        <div className="flex items-center gap-3">
+          {isAdmin && <CampaignActions id={id} status={campaign.status} />}
+          <OutreachButton campaignId={id} />
+        </div>
       </div>
 
       {/* Analytics aggregati (PRD §10 Fase 4) */}

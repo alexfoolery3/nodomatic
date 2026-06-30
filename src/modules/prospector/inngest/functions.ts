@@ -50,7 +50,11 @@ export const scrapeCampaign = inngest.createFunction(
     const businesses = await step.run("scrape-google-maps", async () => {
       const campaign = await getCampaign(campaignId);
       if (!campaign) throw new Error(`Campagna ${campaignId} non trovata`);
-      return scrapeGoogleMaps({ category: campaign.category, city: campaign.city });
+      return scrapeGoogleMaps({
+        category: campaign.category,
+        city: campaign.city,
+        limit: campaign.scrapeLimit,
+      });
     });
 
     const inserted = await step.run("insert-prospects", () =>

@@ -10,6 +10,33 @@ Convenzione: voce più recente **in cima**, sotto `## Cosa è stato fatto`, come
 
 ## Cosa è stato fatto
 
+### Sessione 2026-06-30 — Fix login prod + Inngest + Prospector dashboard Fase 1
+- **Fix login "Invalid origin"** (PR #10): in prod `BETTER_AUTH_URL`/`BETTER_AUTH_SECRET` erano **vuote** → il
+  `baseURL` di better-auth non combaciava con l'`Origin` di `www.nodomatic.com`. Risolto impostando le env prod
+  (URL = `https://www.nodomatic.com`, **SECRET** rigenerato come *sensitive*) + aggiunti `trustedOrigins` espliciti
+  (apex+www+localhost) in [`src/lib/auth.ts`](../src/lib/auth.ts). Verifica via endpoint: origin valido → 401
+  credenziali, origin finto → 403; login admin reale → **200**. Login prod live.
+- **Campagne senza crash** + **Inngest operativo**: l'avvio campagna lanciava un'eccezione full-page perché
+  `inngest.send` in prod richiede `INNGEST_EVENT_KEY` (mancante). Aggiunto try/catch in
+  [`actions/campaigns.ts`](../src/modules/prospector/actions/campaigns.ts) (campagna creata ma riportata a `draft`
+  con messaggio, niente crash). L'utente ha poi inserito **INNGEST_EVENT_KEY/SIGNING_KEY** (sensitive) + deploy →
+  scraping operativo. Apify già configurato.
+- **Prospector dashboard — Fase 1** (piano approvato in `~/.claude/plans/`):
+  - **1A Limite scrape configurabile**: nuova colonna `campaigns.scrapeLimit` (default 50, migrazione
+    `0003_uneven_mad_thinker.sql`); form `<select>` 25/50/100; Zod `min10/max150`; `scrapeCampaign` passa il limite a
+    `scrapeGoogleMaps` (prima fisso a 50).
+  - **1B Menu laterale**: navbar → **sidebar** verticale (`layout.tsx` + nuovo client `sidebar-nav.tsx` con
+    `usePathname` per lo stato attivo, icone lucide).
+  - **1C Archivia/elimina campagne**: `deleteCampaign` (cascade) + archive/unarchive (riusa stato `archived` già in
+    enum); action con guardia admin; UI `campaign-actions.tsx` (confirm a due passi per delete) in lista+dettaglio;
+    toggle "Mostra archiviate".
+  - **1D Suggerimenti**: `<datalist>` nativo su Categoria (riusa `SECTORS`) e Città (nuovo `src/content/cities.ts`);
+    testo libero ammesso.
+  - **1E Chiarezza**: stato attivo nav, empty-state lista campagne, testo guida sul form + caveat `countryCode="it"`.
+  - **Fase 2 (roadmap, non costruita)**: visione **radar multi-canale** (sito/ads/social/GBP/processi → servizio da
+    vendere); 15 funzioni per uso giornaliero (vista "Oggi", scorecard, score multi-canale, pitch AI per-servizio,
+    Meta Ad Library, scoperta social dal sito, ecc.). Ricerca su 13+ tool competitor. Dettaglio nel file di piano.
+
 ### Sessione 2026-06-29 — Go-live dominio nodomatic.com + setup email/SEO
 - **Dominio LIVE**: `nodomatic.com` puntato su **Vercel** (nameserver Vercel, DNS gestito da Vercel; apex→www 308,
   HTTPS con certificato auto). La **vetrina è pubblica e online**. Diagnosi via `dig` (il dominio era ancora sui

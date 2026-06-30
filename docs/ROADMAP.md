@@ -26,13 +26,21 @@ Legenda stato: ✅ fatto · 🔜 prossimo · ⏸️ in pausa / posticipato · �
 **Prossimo (sito vetrina / go-live):**
 - ⏸️ **Tema chiaro** del sito (rinviato dall'utente; base resta dark-only).
 - 🔜 Rifinitura copy dei nuovi servizi (`ads`/`siti`/`social`) se necessario.
-- 🔜 Chiavi funnel (Apify/PageSpeed/Anthropic/Resend/R2/Inngest) — le inserisce l'utente.
-- 🔜 Dominio `nodomatic.com` + sottodominio `app.nodomatic.com`.
+- 🔜 Chiavi funnel: ✅ Apify/PageSpeed/Anthropic/**Inngest**; restano **R2** e **Resend webhook** (`RESEND_WEBHOOK_SECRET`).
+- ⏸️ Sottodominio `app.nodomatic.com` (app interna; oggi la dashboard vive su `www.nodomatic.com/dashboard`).
+
+**Prospector (app interna):**
+- ✅ **Fase 1 dashboard** (2026-06-30): limite scrape configurabile, sidebar, archivia/elimina campagne, suggerimenti, chiarezza.
+  ⚠️ Migrazione `0003` (scrape_limit) da applicare a Neon (vedi "Azioni manuali" in CLAUDE.md).
+- 🔜 **Fase 2 multi-canale** (roadmap approvata): radar social/ads/GBP/processi → servizio da vendere; vista "Oggi"; score
+  e pitch AI per-servizio. Dettaglio nel file di piano in `~/.claude/plans/`.
 
 ## Storico (sintetico)
 
 | data | aspetto | voce | PR/commit |
 |------|---------|------|-----------|
+| 2026-06-30 | I Prospector | Dashboard Fase 1: limite scrape configurabile (mig. 0003) + sidebar + archivia/elimina campagne + suggerimenti categoria/città + chiarezza; piano Fase 2 multi-canale | _branch sessione_ |
+| 2026-06-30 | H Go-live | Fix login prod "Invalid origin" (BETTER_AUTH_URL/SECRET + trustedOrigins) + Inngest keys inserite → scraping operativo | (#10) |
 | 2026-06-29 | H Go-live | Dominio nodomatic.com **LIVE** su Vercel + Search Console verificato + env (NEXT_PUBLIC_APP_URL/PageSpeed) + Resend Pro connesso | _operativo_ |
 | 2026-06-29 | G Sito vetrina | Titolo home senza doppione + metadata canonical su nodomatic.com | (#7) |
 | 2026-06-26 | G Sito vetrina | Mega menu anche su mobile (accordion espandibile) + archivio Figma Brand Board | _branch sessione_ |
